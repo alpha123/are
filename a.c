@@ -39,18 +39,26 @@ Q poq(void){V v=po();if(vqp(v)){R v2q(v);}pu(v);ae(eT);R 0;}
 
 void he(E e){COND(e, eSO,puts("stack overflow"), eT,puts("type error"))}
 
+// array set value
+void asv(A *a,AZ i,V v)																		{
+	if(vt(v)!=a->t){he(eT);}
+	COND(a->t, vI,ai(a)[i]=v2i(v), vF,af(a)[i]=v2f(v), vQ,aq(a)[i]=v2q(v), vY,ay(a)[i]=v2y(v),
+		 vS,as(a)[i]=v2s(v), vD,ad(a)[i]=v2d(v), he(eT))									}
+void mka(U32 n)																				{
+	assert(n>0);
+	AZ s=n;V fst=po();VT t=vt(fst);--n;A *a=anew(t,1,&s);
+	asv(a,n,fst);DO(n,asv(a,n-i-1,po()))pu(a2v(a));											}
+
 #define di() (*(U32 *)(b+pc+1))
 #define df() (*(F64 *)(b+pc+1))
 #define cq(p) do{assert(rsp<AMD);rs[rsp++]=pc+1;pc=(p);}while(0)
 void eval(BC *bc,U32 pc)																	{
-	U32 i;
-	U8 *b=bc->b;
-	E e;
-	Q q;
+	U32 i;E e;Q q;U8 *b=bc->b;
 	if((e=setjmp(ej))){he(e);}
 	else while(pc<bc->l)switch(b[pc])														{
 		C bcPushI:pu(i2v((I32)di()));pc+=5;B;
 		C bcPushF:pu(f2v(df()));pc+=9;B;
+		C bcMkArray:mka(di());pc+=5;B;
 		C bcQuot:pu(q2v(pc+5));pc+=5+di();B;
 		C bcRet:assert(rsp>0);pc=rs[--rsp];B;
 		C bcCallQ:cq(poq());B;

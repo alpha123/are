@@ -45,7 +45,10 @@ USZ nt(T *t,USZ z,U8B s[z])																	{
 		C '.':R l+ry(t,z,s);
 		default:R l+CONDE(isdigit(*s),rnum(t,z,s), isalpha(*s),rw(t,z,s), rsw(t,z,s));		}}
 
-typedef enum{ bcPushI, bcPushF, bcRet, bcCall, bcCallQ, bcDip, bcKeep, bcPopRP, bcQuot, bcDrop, bcSwap, bcDup, bcAdd }BCT;
+typedef enum{
+	bcPushI, bcPushF, bcMkArray, bcRet, bcCall, bcCallQ, bcDip, bcKeep, bcPopRP, bcQuot,
+	bcDrop, bcSwap, bcDup, bcAdd
+}BCT;
 typedef struct{U32 z,l;U8 *b;}BC;
 BC *bcnew(USZ iz){BC *b=ca(1,szof(BC));b->z=iz;b->b=ma(iz);R b;}
 void bcfree(BC *b){free(b->b);free(b);}
@@ -57,22 +60,26 @@ void bcemiti(BC *b,U32 i){DO(4,emit(0))*(U32 *)(b->b+b->l-4)=i;}
 void bcemitf(BC *b,F64 f){DO(8,emit(0))*(F64 *)(b->b+b->l-8)=f;}
 #define seti(i,x) (*(U32 *)(b->b+(i))=x)
 
-#define rt() do{tl=nt(&t,z-i,s+i);i+=tl;}while(0)
+#define rt() (tl=nt(&t,z-i,s+i))
 USZ ct(BC *b,USZ z,U8B s[z]);
 void ci(BC *b,I32 i){emit(bcPushI);emiti((U32)i);}
 void cf(BC *b,F64 f){emit(bcPushF);bcemitf(b,f);}
+USZ cr(BC *b,USZ z,U8B s[z])																	{
+	T t;USZ i=0,tl;U32 tc=0;
+	while(i<z){rt();if(t.t==tRP){i+=tl;B;}++tc;i+=ct(b,z-i,s+i);}emit(bcMkArray);emiti(tc);R i;	}
 USZ cq(BC *b,USZ z,U8B s[z])																{
-	T t;USZ i=0;emit(bcQuot);emiti(0);U32 o=b->l;
-	while(i<z){nt(&t,z-i,s+i);if(t.t==tRB){emit(bcRet);B;}i+=ct(b,z-i,s+i);}
+	T t;USZ i=0,tl;emit(bcQuot);emiti(0);U32 o=b->l;
+	while(i<z){rt();if(t.t==tRB){emit(bcRet);B;}i+=ct(b,z-i,s+i);}
 	seti(o-szof(U32),b->l-o);R i;															}
 USZ csq(BC *b,USZ z,U8B s[z]){emit(bcQuot);emiti(0);U32 o=b->l;USZ i=ct(b,z,s);emit(bcRet);seti(o-szof(U32),b->l-o);R i;}
 void csw(BC *b,CP c){}
 USZ ct(BC *b,USZ z,U8B s[z])																{
-	USZ i=0,tl;T t;rt();
+	USZ i=0,tl;T t;rt();i+=tl;
 	switch(t.t)																				{
 		C tI:ci(b,t.i);B;
 		C tF:cf(b,t.f);B;
 		C tLB:i+=cq(b,z-tl,s+tl);B;
+		C tLP:i+=cr(b,z-tl,s+tl);B;
 		C tSW:switch(t.c)																	{
 			C 0x27:i+=csq(b,z-tl,s+tl);B;
 			C 0x2B:emit(bcAdd);B;
@@ -95,6 +102,7 @@ void dumpbc(BC *b)																			{
 		switch(b->b[i])																		{
 			C bcPushI:printf("PUSHI %"PRIi32"\n",(I32)decodei());i+=4;B;
 			C bcPushF:printf("PUSHF %f\n",decodef());i+=8;B;
+			C bcMkArray:printf("MKARRAY %"PRIu32"\n",decodei());i+=4;B;
 			C bcQuot:printf("QUOT %"PRIu32"\n",decodei());i+=4;B;
 			C bcRet:puts("RET");B;
 			C bcCall:printf("CALL %"PRIu32"\n",decodei());i+=4;B;
