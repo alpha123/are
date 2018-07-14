@@ -39,10 +39,7 @@ Q poq(void){V v=po();if(vqp(v)){R v2q(v);}pu(v);ae(eT);R 0;}
 
 void he(E e){COND(e, eSO,puts("stack overflow"), eT,puts("type error"))}
 
-//#define di() ((b[pc+1]<<24)|(b[pc+2]<<16)|(b[pc+3]<<8)|b[pc+4])
 #define di() (*(U32 *)(b+pc+1))
-//#define df() ((b[pc+1]<<56)|(b[pc+2]<<48)|(b[pc+3]<<40)|(b[pc+4]<<32)|(b[pc+5]<<24)| \
-//              (b[pc+6]<<16)|(b[pc+7]<<8)|b[pc+8])
 #define df() (*(F64 *)(b+pc+1))
 #define cq(p) do{assert(rsp<AMD);rs[rsp++]=pc+1;pc=(p);}while(0)
 void eval(BC *bc,U32 pc)																	{

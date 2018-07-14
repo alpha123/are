@@ -53,12 +53,8 @@ void bcgrw(BC *b){b->b=ra(b->b,b->z+=100);}
 #define emit(x) bcemit(b,x)
 #define emiti(x) bcemiti(b,x)
 void bcemit(BC *b,U8 w){if(b->l==b->z){bcgrw(b);}b->b[b->l++]=w;}
-//void bcemiti(BC *b,I32 i){emit((i>>24)&0xFF);emit((i>>16)&0xFF);emit((i>>8)&0xFF);emit(i&0xFF);}
 void bcemiti(BC *b,U32 i){DO(4,emit(0))*(U32 *)(b->b+b->l-4)=i;}
-//void bcemitf(BC *b,F64 f){union{U64 u;F64 x;}c;c.x=f;emit((c.u>>56)&0xFF);emit((c.u>>48)&0xFF);emit((c.u>>40)&0xFF);
-//emit((c.u>>32)&0xFF);emit((c.u>>24)&0xFF);emit((c.u>>16)&0xFF);emit((c.u>>8)&0xFF);emit(c.u&0xFF);}
 void bcemitf(BC *b,F64 f){DO(8,emit(0))*(F64 *)(b->b+b->l-8)=f;}
-//#define seti(idx,v) ({U32 i=(idx),x=(v);b->b[i]=((x>>24)&0xFF);b->b[i+1]=((x>>16)&0xFF);b->b[i+2]=((x>>8)&0xFF);b->b[i+3]=(x&0xFF);})
 #define seti(i,x) (*(U32 *)(b->b+(i))=x)
 
 #define rt() do{tl=nt(&t,z-i,s+i);i+=tl;}while(0)
@@ -91,7 +87,6 @@ USZ ct(BC *b,USZ z,U8B s[z])																{
 	R i;																					}
 void cmpl(BC *b,USZ z,U8B s[z]){for(USZ i=0;i<z;){i+=ct(b,z-i,s+i);}}
 
-//#define decodei() (((U32)(b->b[i+1])<<24)|((U32)(b->b[i+2])<<16)|((U32)(b->b[i+3])<<8)|(U32)(b->b[i+4]))
 #define decodei() (*(U32 *)(b->b+i+1))
 #define decodef() (*(F64 *)(b->b+i+1))
 void dumpbc(BC *b)																			{
