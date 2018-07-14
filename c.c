@@ -104,6 +104,7 @@ void dumpbc(BC *b)																			{
 			C bcAdd:puts("ADD");B;
 			default:puts("?");																}}}
 #undef decodei
+#undef decodef
 
 #if AREPL
 #include "linenoise.c"
