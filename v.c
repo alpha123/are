@@ -44,6 +44,7 @@ typedef struct{AZ s[AMR];USZ l;VT t;U8 r;U8 a[];}A;
 #define as(x) ((S*)((x)->a))
 #define ay(x) ((Y*)((x)->a))
 #define aq(x) ((Q*)((x)->a))
+#define ad(x) ((D*)((x)->a))
 
 USZ elsz(VT t){COND(t, vI,R szof(I32), vF,R szof(F64), vS,R szof(S), vY,R szof(Y), vD,R szof(D), vQ,R szof(Q))}
 USZ nel(U8 r,AZ s[r]){USZ n=1;DO(r,n*=s[i])R n;}
@@ -137,6 +138,10 @@ Y v2y(V v){assert(vyp(v));R (Y)v.u64;}
 P vsp(V v){R (v.u64&VTAG)==VTS;}
 V s2v(S s){V v;v.u64=VTS|(UIP)s;R v;}
 S v2s(V v){assert(vsp(v));R (S)(v.u64&VMASKPTR);}
+
+P vdp(V v){R (v.u64&VTAG)==VTD;}
+V d2v(D d){V v;v.u64=VTD|(UIP)d;R v;}
+D v2d(V v){assert(vdp(v));R (D)(v.u64&VMASKPTR);}
 
 void pv(V v)																				{
 	if(vip(v)){printf("%"PRIi32,v2i(v));}
