@@ -36,12 +36,12 @@ typedef bool P;
 typedef U32 CP; // codepoint
 typedef U8 U8B; // utf8 byte
 
-#define max(a,b) ({__typeof(a)_x##__LINE__=(a);__typeof(b)_y##__LINE__=(b); \
-      _x##__LINE__>_y##__LINE__?_x##__LINE__:_y##__LINE__;})
-#define min(a,b) ({__typeof(a)_x##__LINE__=(a);__typeof(b) _y##__LINE__=(b); \
-      _x##__LINE__<_y##__LINE__?_x##__LINE__:_y##__LINE__;})
+#define max(a,b) ({__typeof(a)_x=(a);__typeof(b)_y=(b);_x>_y?_x:_y;})
+#define min(a,b) ({__typeof(a)_x=(a);__typeof(b) _y=(b);_x<_y?_x:_y;})
 
 #define sgn(a) (((a)!=0)|(a>>sizeof(a)*8-1))
+
+#define swap(a,b) do{__typeof(a)_a=(a);a=b;b=_a;}while(0)
 
 //#define clz(a) _Generic((a),unsigned int:__builtin_clz((a)),unsigned long:__builtin_clzl((a)),unsigned long long:__builtin_clzll(a))
 
@@ -51,6 +51,9 @@ typedef U8 U8B; // utf8 byte
 #define msz(T,m) (sizeof(((T*)0)->m)) // member size
 
 #define DO(n,...) {__typeof(n)i=0;for(__typeof(n)i_=(n);i<i_;++i){__VA_ARGS__;}}
+#define DO2(n,...) {__typeof(n)j=0;for(__typeof(n)j_=(n);j<j_;++j){__VA_ARGS__;}}
+#define DO3(n,...) {__typeof(n)k=0;for(__typeof(n)k_=(n);k<k_;++k){__VA_ARGS__;}}
+#define DO4(n,...) {__typeof(n)l=0;for(__typeof(n)l_=(n);l<l_;++l){__VA_ARGS__;}}
 
 #define VA_NARGS_IMPL(_0,_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11,_12,_13,_14,_15,_16,_17,_18,_19,_20,N,...) N
 #define VA_NARGS(...) VA_NARGS_IMPL(_,##__VA_ARGS__,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)
@@ -98,6 +101,6 @@ typedef U8 U8B; // utf8 byte
 #define CONDEIMPL9(p,f,...) (p)?({f;}):CONDEIMPL7(__VA_ARGS__)
 #define CONDE(...) (CAT(CONDEIMPL,VA_NARGS(__VA_ARGS__))(__VA_ARGS__))
 
-typedef enum{ eOK, eSO, eT }E;
+typedef enum{ eOK, eSO, eT, eL }E;
 extern jmp_buf ej;
 void ae(E);
