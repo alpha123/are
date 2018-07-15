@@ -37,7 +37,9 @@ V po(void)																					{
 
 Q poq(void){V v=po();if(vqp(v)){R v2q(v);}pu(v);ae(eT);R 0;}
 
-void he(E e){COND(e, eSO,puts("stack overflow"), eT,puts("type error"), eL,puts("length error"))}
+void he(E e)																				{
+	COND(e, eSO,puts("stack overflow"), eT,puts("type error"), eL,puts("length error"),
+	        eR,puts("rank error"), eD,puts("domain error"))									}
 
 void chka(A *a,A *w){U8 pfl=min(a->r,w->r);DO(pfl,if(a->s[i]!=w->s[i]){ae(eL);})}
 
@@ -54,6 +56,23 @@ void mka(U32 n)																				{
 V shp(V a)																					{
 	if(vt(a)!=vA){R i2v(1);}
 	A *aa=v2a(a);AZ ar=aa->r;A *s=anew(vI,1,&ar);DO(ar,ai(s)[i]=aa->s[i]);R a2v(s);			}
+
+V rshp(V a,V w)																						{
+	A *aa,*wa;AZ s[AMR];U8 r;
+	if(vip(w)){if(v2i(w)<0){ae(eD);}r=1;s[0]=v2i(w);}
+	else if(vap(w)&&(wa=v2a(w))->t==vI)																{
+		if(wa->r>1){ae(eR);}if(wa->l>AMR){ae(eD);}r=wa->l;DO(r,s[i]=ai(wa)[i])afree(wa);			}
+	else{ae(eT);}
+	if(vap(a)){
+		aa=v2a(a);
+		if(nel(r,s)<=aa->l){ass(aa,r,s);}
+		else{
+			AZ ol=aa->l;aa=ra(aa,offsetof(A,a)+nel(r,s)*elsz(aa->t));ass(aa,r,s);
+			COND(aa->t, vI,DO(aa->l,ai(aa)[i]=ai(aa)[i%ol]), vF,DO(aa->l,af(aa)[i]=af(aa)[i%ol]),
+			            vQ,DO(aa->l,aq(aa)[i]=aq(aa)[i%ol]), vY,DO(aa->l,ay(aa)[i]=ay(aa)[i%ol]),
+			            vS,DO(aa->l,as(aa)[i]=as(aa)[i%ol]), vD,DO(aa->l,ad(aa)[i]=ad(aa)[i%ol]))	}
+		R a2v(aa);																					}
+	else{A *oa=anew(vt(a),r,s);DO(nel(r,s),asv(oa,i,a))R a2v(oa);}									}
 
 V add(V a,V w)																				{
 	VT at=vt(a),wt=vt(w);A *aa,*wa;I32 wi;F64 wf;
@@ -99,6 +118,7 @@ void eval(BC *bc,U32 pc)																	{
 		C bcDip:q=poq();assert(rpp<ARE_RPUSH_SIZE);rp[rpp++]=po();call(1,q);B;
 		C bcPopRP:assert(rpp>0);pu(rp[--rpp]);++pc;B;
 		C bcShape:pu(shp(s[sp-1]));++pc;B;
+		C bcReshape:w=po();a=po();pu(rshp(a,w));++pc;B;
 		C bcAdd:w=po();a=po();pu(add(a,w));++pc;B;
 		default:puts("unimplemented opcode");++pc;											}}
 

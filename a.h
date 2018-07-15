@@ -101,6 +101,6 @@ typedef U8 U8B; // utf8 byte
 #define CONDEIMPL9(p,f,...) (p)?({f;}):CONDEIMPL7(__VA_ARGS__)
 #define CONDE(...) (CAT(CONDEIMPL,VA_NARGS(__VA_ARGS__))(__VA_ARGS__))
 
-typedef enum{ eOK, eSO, eT, eL }E;
+typedef enum{ eOK, eSO, eT, eL, eR, eD }E;
 extern jmp_buf ej;
 void ae(E);
