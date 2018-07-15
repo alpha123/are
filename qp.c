@@ -80,20 +80,6 @@ popcount(Tbitmap w) {
 	return((uint)__builtin_popcount(w));
 }
 
-// Parallel popcount of the top and bottom 16 bits in a 32 bit word. This
-// is probably only a win if your CPU is short of registers and/or integer
-// units. NOTE: The caller needs to extract the results by masking with
-// 0x00FF0000 and 0x000000FF for the top and bottom halves.
-
-uint
-popcount16x2(uint w) {
-	w -= (w >> 1) & 0x55555555;
-	w = (w & 0x33333333) + ((w >> 2) & 0x33333333);
-	w = (w + (w >> 4)) & 0x0F0F0F0F;
-	w = w + (w >> 8);
-	return(w);
-}
-
 // A trie node is two words on 64 bit machines, or three on 32 bit
 // machines. A node can be a leaf or a branch. In a leaf, the value
 // pointer must be word-aligned to allow for the tag bits.
@@ -201,24 +187,10 @@ twig(Trie *t, uint i) {
 	return(&t->branch.twigs[i]);
 }
 
-#ifdef HAVE_NARROW_CPU
-
-#define TWIGOFFMAX(off, max, t, b) do {				\
-		Tbitmap bitmap = t->branch.bitmap;		\
-		uint word = (bitmap << 16) | (bitmap & (b-1));	\
-		uint counts = popcount16x2(word);		\
-		off = counts & 0xFF;				\
-		max = (counts >> 16) & 0xFF;			\
-	} while(0)
-
-#else
-
 #define TWIGOFFMAX(off, max, t, b) do {			\
 		off = twigoff(t, b);			\
 		max = popcount(t->branch.bitmap);	\
 	} while(0)
-
-#endif
 
 bool
 Tgetkv(Tbl *tbl, const S key, S *pkey, U32 *pval) {
@@ -358,7 +330,7 @@ growbranch:;
 	return(tbl);
 }
 
-#if 0
+#if 1
 int main(int argc,char**argv){
 	Tbl *dict=NULL; S kout,k1=snew(3,"4T2"),k2=snew(5,"4T200"),k3=snew(2,"Ai");
 	dict=Tsetl(dict,k1,42);
