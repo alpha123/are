@@ -51,7 +51,7 @@ void mka(U32 n)																				{
 
 #define di() (*(U32 *)(b+pc+1))
 #define df() (*(F64 *)(b+pc+1))
-#define cq(p) do{assert(rsp<AMD);rs[rsp++]=pc+1;pc=(p);}while(0)
+#define call(inc,p) do{assert(rsp<AMD);rs[rsp++]=pc+inc;pc=(p);}while(0)
 void eval(BC *bc,U32 pc)																	{
 	U32 i;E e;Q q;U8 *b=bc->b;
 	if((e=setjmp(ej))){he(e);}
@@ -60,9 +60,11 @@ void eval(BC *bc,U32 pc)																	{
 		C bcPushF:pu(f2v(df()));pc+=9;B;
 		C bcMkArray:mka(di());pc+=5;B;
 		C bcQuot:pu(q2v(pc+5));pc+=5+di();B;
+		C bcJmp:pc+=5+di();B;
 		C bcRet:assert(rsp>0);pc=rs[--rsp];B;
-		C bcCallQ:cq(poq());B;
-		C bcDip:q=poq();assert(rpp<ARE_RPUSH_SIZE);rp[rpp++]=po();cq(q);B;
+		C bcCall:call(5,di());B;
+		C bcCallQ:call(1,poq());B;
+		C bcDip:q=poq();assert(rpp<ARE_RPUSH_SIZE);rp[rpp++]=po();call(1,q);B;
 		C bcPopRP:assert(rpp>0);pu(rp[--rpp]);++pc;B;
 		default:puts("unimplemented opcode");++pc;											}}
 
@@ -78,10 +80,11 @@ void eval(BC *bc,U32 pc)																	{
 int main(int argc, const char **argv)														{
 	char *ln;
 	BC *b=bcnew(256);
+	WD *d=NULL;
 	U32 obl=0;
 	linenoiseSetEncodingFunctions(linenoiseUtf8PrevCharLen,linenoiseUtf8NextCharLen,linenoiseUtf8ReadCode);
 	while((ln=linenoise("are> ")))															{
-		cmpl(b,strlen(ln),ln);
+		cmpl(b,&d,strlen(ln),ln);
 		dumpbc(b);
 		eval(b,obl);
 		obl=b->l;
