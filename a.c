@@ -66,15 +66,15 @@ V add(V a,V w)																				{
 			aa=v2a(a);wa=v2a(w);
 			if(aa->t!=wa->t){ae(eT);}chka(aa,wa);if(aa->r<wa->r){swap(a,w);swap(aa,wa);}
 			if(aa->t==vI)																	{
-				U8 rd=aa->r-wa->r;if(rd==0){DO(aa->l,ai(aa)[i]+=ai(wa)[i])R a;}
+				U8 rd=aa->r-wa->r;if(rd==0){DO(aa->l,ai(aa)[i]+=ai(wa)[i])goto done;}
 				USZ ofl=nel(rd,aa->s),ifl=nel(wa->r,aa->s+rd);
 				DO(ofl,DO2(ifl,ai(aa)[j+i*ifl]+=ai(wa)[j]))									}
 			else if(aa->t==vF)																{
-				U8 rd=aa->r-wa->r;if(rd==0){DO(aa->l,af(aa)[i]+=af(wa)[i])R a;}
+				U8 rd=aa->r-wa->r;if(rd==0){DO(aa->l,af(aa)[i]+=af(wa)[i])goto done;}
 				USZ ofl=nel(rd,aa->s),ifl=nel(wa->r,aa->s+rd);
 				DO(ofl,DO2(ifl,af(aa)[j+i*ifl]+=af(wa)[j]))									}
 			else{ae(eT);}
-			R a;
+			done:afree(wa);R a;
 		default:ae(eT);																		}}
 
 #define di() (*(U32 *)(b+pc+1))
