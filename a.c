@@ -42,8 +42,8 @@ void he(E e){COND(e, eSO,puts("stack overflow"), eT,puts("type error"))}
 // array set value
 void asv(A *a,AZ i,V v)																		{
 	if(vt(v)!=a->t){he(eT);}
-	COND(a->t, vI,ai(a)[i]=v2i(v), vF,af(a)[i]=v2f(v), vQ,aq(a)[i]=v2q(v), vY,ay(a)[i]=v2y(v),
-		 vS,as(a)[i]=v2s(v), vD,ad(a)[i]=v2d(v), he(eT))									}
+	COND(a->t, vI,ai(a)[i]=v2i(v), vF,af(a)[i]=v2f(v), vQ,aq(a)[i]=v2q(v),
+	     vY,ay(a)[i]=v2y(v), vS,as(a)[i]=v2s(v), vD,ad(a)[i]=v2d(v))						}
 void mka(U32 n)																				{
 	assert(n>0);
 	AZ s=n;V fst=po();VT t=vt(fst);--n;A *a=anew(t,1,&s);
