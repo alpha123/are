@@ -51,6 +51,10 @@ void mka(U32 n)																				{
 	AZ s=n;V fst=po();VT t=vt(fst);--n;A *a=anew(t,1,&s);
 	asv(a,n,fst);DO(n,asv(a,n-i-1,po()))pu(a2v(a));											}
 
+V shp(V a)																					{
+	if(vt(a)!=vA){R i2v(1);}
+	A *aa=v2a(a);AZ ar=aa->r;A *s=anew(vI,1,&ar);DO(ar,ai(s)[i]=aa->s[i]);R a2v(s);			}
+
 V add(V a,V w)																				{
 	VT at=vt(a),wt=vt(w);A *aa,*wa;I32 wi;F64 wf;
 	switch((1<<at)|(1<<wt))																	{
@@ -94,6 +98,7 @@ void eval(BC *bc,U32 pc)																	{
 		C bcCallQ:call(1,poq());B;
 		C bcDip:q=poq();assert(rpp<ARE_RPUSH_SIZE);rp[rpp++]=po();call(1,q);B;
 		C bcPopRP:assert(rpp>0);pu(rp[--rpp]);++pc;B;
+		C bcShape:pu(shp(s[sp-1]));++pc;B;
 		C bcAdd:w=po();a=po();pu(add(a,w));++pc;B;
 		default:puts("unimplemented opcode");++pc;											}}
 
