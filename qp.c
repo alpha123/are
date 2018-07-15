@@ -135,9 +135,10 @@ typedef union Trie {
 	struct Tbranch branch;
 } Trie;
 
-typedef struct Tbl {
+// word dict
+typedef struct WD {
 	union Trie root;
-} Tbl;
+} WD;
 
 // Test flags to determine type of this node.
 
@@ -193,7 +194,7 @@ twig(Trie *t, uint i) {
 	} while(0)
 
 bool
-Tgetkv(Tbl *tbl, const S key, S *pkey, U32 *pval) {
+Tgetkv(WD *tbl, const S key, S *pkey, U32 *pval) {
 	if(tbl == NULL)
 		return(false);
 	Trie *t = &tbl->root;
@@ -239,7 +240,7 @@ next_rec(Trie *t, S *pkey, U32 *pval) {
 }
 
 bool
-Tnextl(Tbl *tbl, S *pkey, U32 *pval) {
+Tnextl(WD *tbl, S *pkey, U32 *pval) {
 	if(tbl == NULL) {
 		*pkey = NULL;
 		return(NULL);
@@ -247,8 +248,8 @@ Tnextl(Tbl *tbl, S *pkey, U32 *pval) {
 	return(next_rec(&tbl->root, pkey, pval));
 }
 
-Tbl *
-Tsetl(Tbl *tbl, const S key, U32 val) {
+WD *
+Tsetl(WD *tbl, const S key, U32 val) {
 	// Ensure flag bits are zero.
 	//if(((uint64_t)val & 3) != 0) {
 	//	return(NULL);
@@ -330,9 +331,9 @@ growbranch:;
 	return(tbl);
 }
 
-#if 1
+#if 0
 int main(int argc,char**argv){
-	Tbl *dict=NULL; S kout,k1=snew(3,"4T2"),k2=snew(5,"4T200"),k3=snew(2,"Ai");
+	WD *dict=NULL; S kout,k1=snew(3,"4T2"),k2=snew(5,"4T200"),k3=snew(2,"Ai");
 	dict=Tsetl(dict,k1,42);
 	dict=Tsetl(dict,k2,4200);
 	dict=Tsetl(dict,k3,3);
