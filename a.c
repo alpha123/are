@@ -75,7 +75,7 @@ V rshp(V a,V w)																						{
 	else{A *oa=anew(vt(a),r,s);DO(nel(r,s),asv(oa,i,a))R a2v(oa);}									}
 
 #define r0dc(name,opi,opf)																		\
-	V add(V a,V w)																			{	\
+	V name(V a,V w)																			{	\
 	VT at=vt(a),wt=vt(w);A *aa,*wa;I32 wi;F64 wf;												\
 	switch((1<<at)|(1<<wt))																	{	\
 		C 1<<vI:R i2v(opi(v2i(a),v2i(w)));														\
@@ -103,10 +103,13 @@ V rshp(V a,V w)																						{
 
 #define opp(x,y) ((x)+(y))
 r0dc(add,opp,opp)
+#define opm(x,y) ((x)*(y))
+r0dc(mul,opm,opm)
 
 #define di() (*(U32 *)(b+pc+1))
 #define df() (*(F64 *)(b+pc+1))
 #define call(inc,p) do{assert(rsp<AMD);rs[rsp++]=pc+inc;pc=(p);}while(0)
+#define dy(bc,fn) C bc:w=po();a=po();pu(fn(a,w));++pc;B;
 void eval(BC *bc,U32 pc)																	{
 	U32 i;E e;Q q;U8 *b=bc->b;V a,w;
 	if((e=setjmp(ej))){he(e);}
@@ -123,7 +126,8 @@ void eval(BC *bc,U32 pc)																	{
 		C bcPopRP:assert(rpp>0);pu(rp[--rpp]);++pc;B;
 		C bcShape:pu(shp(s[sp-1]));++pc;B;
 		C bcReshape:w=po();a=po();pu(rshp(a,w));++pc;B;
-		C bcAdd:w=po();a=po();pu(add(a,w));++pc;B;
+		dy(bcAdd,add)
+		dy(bcMul,mul)
 		default:puts("unimplemented opcode");++pc;											}}
 
 //void initstack(void){
