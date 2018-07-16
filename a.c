@@ -7,6 +7,8 @@
 #include "u.c"
 #include "c.c"
 
+#include <math.h>
+
 #define ARE_STACK_SIZE 1024
 
 #define ARE_MAX_RSTACK_DEPTH 128
@@ -100,12 +102,47 @@ V rshp(V a,V w)																						{
 			done:afree(wa);R a;																	\
 		default:ae(eT);																		}}
 
+#define r0dnc(name,opi,opf)																		\
+	V name(V a,V w)																			{	\
+	VT at=vt(a),wt=vt(w);A *aa,*wa,*lg,*sm;V lgv,smv;I32 ii;F64 f;								\
+	switch((1<<at)|(1<<wt))																	{	\
+		C 1<<vI:R i2v(opi(v2i(a),v2i(w)));														\
+		C 1<<vF:R f2v(opf(v2f(a),v2f(w)));														\
+		C (1<<vA)|(1<<vI):																		\
+			if(vap(w)){wa=v2a(w);ii=v2i(a);DO(wa->l,ai(wa)[i]=opi(ii,ai(wa)[i]))R w;}			\
+			aa=v2a(a);ii=v2i(w);DO(aa->l,ai(aa)[i]=opi(ai(aa)[i],ii))R a;						\
+		C (1<<vA)|(1<<vF):																		\
+			if(vap(w)){wa=v2a(w);f=v2f(a);DO(wa->l,ai(wa)[i]=opf(f,ai(wa)[i]))R w;}				\
+			aa=v2a(a);f=v2f(w);DO(aa->l,af(aa)[i]=opf(af(aa)[i],f))R a;							\
+		C 1<<vA:																				\
+			lg=aa=v2a(lgv=a);sm=wa=v2a(smv=w);													\
+			if(aa->t!=wa->t){ae(eT);}chka(aa,wa);if(aa->r<wa->r){swap(lgv,smv);swap(lg,sm);}	\
+			if(aa->t==vI)																	{	\
+				U8 rd=lg->r-sm->r;if(rd==0){DO(aa->l,ai(aa)[i]=opi(ai(aa)[i],ai(wa)[i]))goto done;}	\
+				USZ ofl=nel(rd,lg->s),ifl=nel(sm->r,lg->s+rd);									\
+				if(lg==aa){DO(ofl,DO2(ifl,ai(aa)[j+i*ifl]=opi(ai(aa)[j+i*ifl],ai(wa)[j])))}		\
+				else{DO(ofl,DO2(ifl,ai(wa)[j+i*ifl]=opi(ai(aa)[j],ai(wa)[j+i*ifl])))}		}	\
+			else if(aa->t==vF)																{	\
+				U8 rd=lg->r-sm->r;if(rd==0){DO(aa->l,af(aa)[i]=opf(af(aa)[i],af(wa)[i]))goto done;}	\
+				USZ ofl=nel(rd,aa->s),ifl=nel(wa->r,aa->s+rd);									\
+				if(lg==aa){DO(ofl,DO2(ifl,af(aa)[j+i*ifl]=opf(af(aa)[j+i*ifl],af(wa)[j])))}		\
+				else{DO(ofl,DO2(ifl,af(wa)[j+i*ifl]=opf(af(aa)[j],af(wa)[j+i*ifl])))}		}	\
+			else{ae(eT);}																		\
+			done:afree(sm);R lgv;																\
+		default:ae(eT);																		}}
+
 #define opp(x,y) ((x)+(y))
 r0dc(add,opp,opp)
 #define opm(x,y) ((x)*(y))
 r0dc(mul,opm,opm)
 r0dc(imin,min,min)
 r0dc(imax,max,max)
+#define ops(x,y) ((x)-(y))
+r0dnc(sub,ops,ops)
+#define opd(x,y) ((x)/(y))
+r0dnc(idiv,opd,opd)
+#define opr(x,y) ((x)%(y))
+r0dnc(mod,opr,fmod)
 
 #define di() (*(U32 *)(b+pc+1))
 #define df() (*(F64 *)(b+pc+1))
@@ -130,6 +167,9 @@ void eval(BC *bc,U32 pc)																	{
 		dy(bcReshape,rshp)
 		dy(bcAdd,add)
 		dy(bcMul,mul)
+		dy(bcSub,sub)
+		dy(bcDiv,idiv)
+		dy(bcMod,mod)
 		dy(bcMin,imin)
 		dy(bcMax,imax)
 		default:puts("unimplemented opcode");++pc;											}}
