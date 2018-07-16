@@ -14,6 +14,9 @@
 
 #define ARE_RPUSH_SIZE 64
 
+// index origin
+#define IO 1
+
 V s[ARE_STACK_SIZE];
 U32 sp=0;
 U32 rs[AMD];
@@ -49,10 +52,10 @@ void mka(U32 n)																				{
 	AZ s=n;V fst=po();VT t=vt(fst);--n;A *a=anew(t,1,&s);
 	asv(a,n,fst);DO(n,asv(a,n-i-1,po()))pu(a2v(a));											}
 
+V iota(V a){if(vt(a)!=vI){ae(eT);}AZ l=v2i(a);A *o=anew(vI,1,&l);DO(l,ai(o)[i]=i+IO)R a2v(o);}
 V shp(V a)																					{
 	if(vt(a)!=vA){R i2v(1);}
 	A *aa=v2a(a);AZ ar=aa->r;A *s=anew(vI,1,&ar);DO(ar,ai(s)[i]=aa->s[i]);R a2v(s);			}
-
 V rshp(V a,V w)																						{
 	A *aa,*wa;AZ s[AMR];U8 r;
 	if(vip(w)){if(v2i(w)<0){ae(eD);}r=1;s[0]=v2i(w);}
@@ -120,6 +123,7 @@ void eval(BC *bc,U32 pc)																	{
 		C bcCallQ:call(1,poq());B;
 		C bcDip:q=poq();assert(rpp<ARE_RPUSH_SIZE);rp[rpp++]=po();call(1,q);B;
 		C bcPopRP:assert(rpp>0);pu(rp[--rpp]);++pc;B;
+		C bcIota:pu(iota(po()));++pc;B;
 		C bcShape:pu(shp(s[sp-1]));++pc;B;
 		dy(bcReshape,rshp)
 		dy(bcAdd,add)
