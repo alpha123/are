@@ -125,7 +125,7 @@ void eval(BC *bc,U32 pc)																	{
 		C bcDip:q=poq();assert(rpp<ARE_RPUSH_SIZE);rp[rpp++]=po();call(1,q);B;
 		C bcPopRP:assert(rpp>0);pu(rp[--rpp]);++pc;B;
 		C bcShape:pu(shp(s[sp-1]));++pc;B;
-		C bcReshape:w=po();a=po();pu(rshp(a,w));++pc;B;
+		dy(bcReshape,rshp)
 		dy(bcAdd,add)
 		dy(bcMul,mul)
 		default:puts("unimplemented opcode");++pc;											}}
