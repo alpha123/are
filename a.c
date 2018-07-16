@@ -104,6 +104,8 @@ V rshp(V a,V w)																						{
 r0dc(add,opp,opp)
 #define opm(x,y) ((x)*(y))
 r0dc(mul,opm,opm)
+r0dc(imin,min,min)
+r0dc(imax,max,max)
 
 #define di() (*(U32 *)(b+pc+1))
 #define df() (*(F64 *)(b+pc+1))
@@ -128,6 +130,8 @@ void eval(BC *bc,U32 pc)																	{
 		dy(bcReshape,rshp)
 		dy(bcAdd,add)
 		dy(bcMul,mul)
+		dy(bcMin,imin)
+		dy(bcMax,imax)
 		default:puts("unimplemented opcode");++pc;											}}
 
 #include "linenoise.c"

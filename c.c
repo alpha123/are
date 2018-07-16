@@ -48,7 +48,7 @@ USZ nt(T *t,USZ z,U8B s[z])																	{
 
 typedef enum{
 	bcPushI, bcPushF, bcMkArray, bcJmp, bcRet, bcCall, bcCallQ, bcDip, bcKeep, bcPopRP,
-	bcQuot, bcDrop, bcSwap, bcDup, bcIota, bcShape, bcReshape, bcAdd, bcMul
+	bcQuot, bcDrop, bcSwap, bcDup, bcIota, bcShape, bcReshape, bcAdd, bcMul, bcMin, bcMax
 }BCT;
 typedef struct{U32 z,l;U8 *b;}BC;
 BC *bcnew(USZ iz){BC *b=ca(1,szof(BC));b->z=iz;b->b=ma(iz);R b;}
@@ -102,6 +102,8 @@ USZ ct(BC *b,WD **d,USZ z,U8B s[z])															{
 			C 0x2218:emit(bcCallQ);B;
 			C 0x2193:emit(bcDip);emit(bcPopRP);B;
 			C 0x2B71:emit(bcKeep);B;
+			C 0x25B3:emit(bcMax);B;
+			C 0x25BD:emit(bcMin);B;
 			default:csw(b,t.c);																}
 			B;
 		C tW:cw(b,*d,t.s);B;
@@ -130,6 +132,8 @@ void dumpbc(BC *b)																			{
 			C bcShape:puts("SHAPE");B;
 			C bcAdd:puts("ADD");B;
 			C bcMul:puts("MUL");B;
+			C bcMin:puts("MIN");B;
+			C bcMax:puts("MAX");B;
 			default:puts("?");																}}}
 #undef decodei
 #undef decodef
