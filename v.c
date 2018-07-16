@@ -37,7 +37,6 @@ typedef void *D; // TODO implement dicts
 #define AMR ARE_MAX_RANK
 typedef USZ AZ; // array size
 
-//typedef struct{AZ s[AMR];VT t;U8 r;union{I32 *ai;F64 *af;U8B *as;Y *ay;D *ad;Q *aq;};}A;
 typedef struct{AZ s[AMR];USZ l;VT t;U8 r;U8 a[];}A;
 #define ai(x) ((I32*)((x)->a))
 #define af(x) ((F64*)((x)->a))

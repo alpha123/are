@@ -7,10 +7,6 @@
 #include "u.c"
 #include "c.c"
 
-//#include <sys/mman.h>
-//
-//#define PAGE_SIZE 4096
-
 #define ARE_STACK_SIZE 1024
 
 #define ARE_MAX_RSTACK_DEPTH 128
@@ -129,11 +125,6 @@ void eval(BC *bc,U32 pc)																	{
 		dy(bcAdd,add)
 		dy(bcMul,mul)
 		default:puts("unimplemented opcode");++pc;											}}
-
-//void initstack(void){
-//	s=mmap();
-//	sp=0;
-//}
 
 #include "linenoise.c"
 #include "linenoise-utf8.h"
