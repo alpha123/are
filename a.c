@@ -74,31 +74,35 @@ V rshp(V a,V w)																						{
 		R a2v(aa);																					}
 	else{A *oa=anew(vt(a),r,s);DO(nel(r,s),asv(oa,i,a))R a2v(oa);}									}
 
-V add(V a,V w)																				{
-	VT at=vt(a),wt=vt(w);A *aa,*wa;I32 wi;F64 wf;
-	switch((1<<at)|(1<<wt))																	{
-		C 1<<vI:R i2v(v2i(a)+v2i(w));
-		C 1<<vF:R f2v(v2f(a)+v2f(w));
-		C (1<<vA)|(1<<vI):
-			if(vap(w)){swap(a,w);}
-			aa=v2a(a);wi=v2i(w);DO(aa->l,ai(aa)[i]+=wi)R a;
-		C (1<<vA)|(1<<vF):
-			if(vap(w)){swap(a,w);}
-			aa=v2a(a);wf=v2f(w);DO(aa->l,af(aa)[i]+=wf)R a;
-		C 1<<vA:
-			aa=v2a(a);wa=v2a(w);
-			if(aa->t!=wa->t){ae(eT);}chka(aa,wa);if(aa->r<wa->r){swap(a,w);swap(aa,wa);}
-			if(aa->t==vI)																	{
-				U8 rd=aa->r-wa->r;if(rd==0){DO(aa->l,ai(aa)[i]+=ai(wa)[i])goto done;}
-				USZ ofl=nel(rd,aa->s),ifl=nel(wa->r,aa->s+rd);
-				DO(ofl,DO2(ifl,ai(aa)[j+i*ifl]+=ai(wa)[j]))									}
-			else if(aa->t==vF)																{
-				U8 rd=aa->r-wa->r;if(rd==0){DO(aa->l,af(aa)[i]+=af(wa)[i])goto done;}
-				USZ ofl=nel(rd,aa->s),ifl=nel(wa->r,aa->s+rd);
-				DO(ofl,DO2(ifl,af(aa)[j+i*ifl]+=af(wa)[j]))									}
-			else{ae(eT);}
-			done:afree(wa);R a;
+#define r0dc(name,opi,opf)																		\
+	V add(V a,V w)																			{	\
+	VT at=vt(a),wt=vt(w);A *aa,*wa;I32 wi;F64 wf;												\
+	switch((1<<at)|(1<<wt))																	{	\
+		C 1<<vI:R i2v(opi(v2i(a),v2i(w)));														\
+		C 1<<vF:R f2v(opf(v2f(a),v2f(w)));														\
+		C (1<<vA)|(1<<vI):																		\
+			if(vap(w)){swap(a,w);}																\
+			aa=v2a(a);wi=v2i(w);DO(aa->l,ai(aa)[i]=opi(ai(aa)[i],wi))R a;						\
+		C (1<<vA)|(1<<vF):																		\
+			if(vap(w)){swap(a,w);}																\
+			aa=v2a(a);wf=v2f(w);DO(aa->l,af(aa)[i]=opf(af(aa)[i],wf))R a;						\
+		C 1<<vA:																				\
+			aa=v2a(a);wa=v2a(w);																\
+			if(aa->t!=wa->t){ae(eT);}chka(aa,wa);if(aa->r<wa->r){swap(a,w);swap(aa,wa);}		\
+			if(aa->t==vI)																	{	\
+				U8 rd=aa->r-wa->r;if(rd==0){DO(aa->l,ai(aa)[i]=opi(ai(aa)[i],ai(wa)[i]))goto done;}	\
+				USZ ofl=nel(rd,aa->s),ifl=nel(wa->r,aa->s+rd);									\
+				DO(ofl,DO2(ifl,ai(aa)[j+i*ifl]=opi(ai(aa)[j+i*ifl],ai(wa)[j])))				}	\
+			else if(aa->t==vF)																{	\
+				U8 rd=aa->r-wa->r;if(rd==0){DO(aa->l,af(aa)[i]=opf(af(aa)[i],af(wa)[i]))goto done;}	\
+				USZ ofl=nel(rd,aa->s),ifl=nel(wa->r,aa->s+rd);									\
+				DO(ofl,DO2(ifl,af(aa)[j+i*ifl]=opf(af(aa)[j+i*ifl],af(wa)[j])))				}	\
+			else{ae(eT);}																		\
+			done:afree(wa);R a;																	\
 		default:ae(eT);																		}}
+
+#define opp(x,y) ((x)+(y))
+r0dc(add,opp,opp)
 
 #define di() (*(U32 *)(b+pc+1))
 #define df() (*(F64 *)(b+pc+1))
