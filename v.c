@@ -156,6 +156,7 @@ void pv(V v)																				{
 				C vI:printf("%"PRIi32" ",ai(a)[i]);B;
 				C vF:printf("%f ",af(a)[i]);B;
 				C vQ:printf("$%"PRIu32" ",aq(a)[i]);B;
+				C vY:printf(".%"PRIu32" ",v2y(v));B;
 				default:puts("other value ");												}}}
 	else {puts("other value");}																}
 
