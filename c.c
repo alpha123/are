@@ -34,15 +34,17 @@ rfn(ri, t->t=tI;t->i=0;while(isdigit(*s)){t->i*=10;t->i+=*s-'0';++s;++l;})
 rfn(rf, t->t=tF;F64 wp=t->i,f=0.0,d=10.0;while(isdigit(*s)){f+=(F64)(*s-'0')/d;d*=10.0;++s;++l;}t->f=wp+f)
 rfn(rnum, l=ri(t,z,s);if(s[1]=='.'&&z>2){l+=rf(t,z-2,s+2)+1;})
 rfn(ry, l=rw(t,z-1,s+1)+1;t->t=tY)
+rfn(rsl, t->t=tS;while(l<z&&s[l]!='}'){++l;}t->s=snew((U32)l-1,s+1);++l)
 USZ nt(T *t,USZ z,U8B s[z])																	{
 	USZ l=0;while(isspace(*s)){++l;++s;}
 	switch(*s)																				{
-		C ANY('(',')','[',']','{','}',';'):t->t=*s-'(';R l+1;
+		C ANY('(',')','[',']',';'):t->t=*s-'(';R l+1;
 		C '.':R l+ry(t,z,s);
+		C '{':R l+rsl(t,z,s);
 		default:R l+CONDE(isdigit(*s),rnum(t,z,s), isalpha(*s),rw(t,z,s), rsw(t,z,s));		}}
 
 typedef enum{
-	bcPushI, bcPushF, bcMkArray, bcJmp, bcRet, bcCall, bcCallQ, bcDip, bcKeep, bcPopRP,
+	bcPushI, bcPushF, bcPushS, bcMkArray, bcJmp, bcRet, bcCall, bcCallQ, bcDip, bcKeep, bcPopRP,
 	bcQuot, bcDrop, bcSwap, bcDup, bcIota, bcShape, bcReshape, bcAdd, bcMul, bcSub, bcDiv,
 	bcMod, bcMin, bcMax
 }BCT;
@@ -52,15 +54,18 @@ void bcfree(BC *b){free(b->b);free(b);}
 void bcgrw(BC *b){b->b=ra(b->b,b->z+=100);}
 #define emit(x) bcemit(b,x)
 #define emiti(x) bcemiti(b,x)
+#define emitp(x) bcemitp(b,x)
 void bcemit(BC *b,U8 w){if(b->l==b->z){bcgrw(b);}b->b[b->l++]=w;}
 void bcemiti(BC *b,U32 i){DO(4,emit(0))*(U32 *)(b->b+b->l-4)=i;}
 void bcemitf(BC *b,F64 f){DO(8,emit(0))*(F64 *)(b->b+b->l-8)=f;}
+void bcemitp(BC *b,UIP p){DO(szof(UIP),emit(0))*(UIP *)(b->b+b->l-szof(UIP))=p;}
 #define seti(i,x) (*(U32 *)(b->b+(i))=x)
 
 #define rt() (tl=nt(&t,z-i,s+i))
 USZ ct(BC *b,WD **d,USZ z,U8B s[z]);
 void ci(BC *b,I32 i){emit(bcPushI);emiti((U32)i);}
 void cf(BC *b,F64 f){emit(bcPushF);bcemitf(b,f);}
+void cs(BC *b,S s){emit(bcPushS);emitp((UIP)s);}
 USZ cr(BC *b,WD **d,USZ z,U8B s[z])																	{
 	T t;USZ i=0,tl;U32 tc=0;
 	while(i<z){rt();if(t.t==tRP){i+=tl;B;}++tc;i+=ct(b,d,z-i,s+i);}emit(bcMkArray);emiti(tc);R i;	}
@@ -84,6 +89,7 @@ USZ ct(BC *b,WD **d,USZ z,U8B s[z])															{
 	switch(t.t)																				{
 		C tI:ci(b,t.i);B;
 		C tF:cf(b,t.f);B;
+		C tS:cs(b,t.s);B;
 		C tLB:i+=cq(b,d,z-tl,s+tl);B;
 		C tLP:i+=cr(b,d,z-tl,s+tl);B;
 		C tSC:emit(bcRet);B;
@@ -112,12 +118,14 @@ void cmpl(BC *b,WD **d,USZ z,U8B s[z]){for(USZ i=0;i<z;){i+=ct(b,d,z-i,s+i);}}
 
 #define decodei() (*(U32 *)(b->b+i+1))
 #define decodef() (*(F64 *)(b->b+i+1))
+#define decodep() (*(UIP *)(b->b+i+1))
 void dumpbc(BC *b)																			{
 	for(USZ i=0;i<b->l;++i)																	{
 		printf("%zu\t",i);
 		switch(b->b[i])																		{
 			C bcPushI:printf("PUSHI %"PRIi32"\n",(I32)decodei());i+=4;B;
 			C bcPushF:printf("PUSHF %f\n",decodef());i+=8;B;
+			C bcPushS:printf("PUSHS 0x%"PRIxPTR"\n",decodep());i+=szof(UIP);B;
 			C bcMkArray:printf("MKARRAY %"PRIu32"\n",decodei());i+=4;B;
 			C bcQuot:printf("QUOT %"PRIu32"\n",decodei());i+=4;B;
 			C bcJmp:printf("JMP %"PRIu32"\n",decodei());i+=4;B;
@@ -160,6 +168,7 @@ int main(int argc,char**argv)																{
 				C tI: printf("%"PRIi32"\n",t.i); B;
 				C tF: printf("%f\n",t.f); B;
 				C tY: printf(".%.*s\n",slen(t.s),t.s);sfree(t.s);B;
+				C tS: printf("{%.*s}\n",slen(t.s),t.s);sfree(t.s);B;
 				default: putchar('('+(char)t.t);putchar('\n');								}}
 		WD *d=NULL;BC *b=bcnew(256);cmpl(b,&d,z,line);
 		dumpbc(b);

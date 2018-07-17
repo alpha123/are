@@ -147,6 +147,7 @@ void pv(V v)																				{
 	else if(vfp(v)){printf("%f",v2f(v));}
 	else if(vqp(v)){printf("$%"PRIu32,v2q(v));}
 	else if(vyp(v)){printf(".%"PRIu32,v2y(v));}
+	else if(vsp(v)){printf("%.*s",(int)slen(v2s(v)),v2s(v));}
 	else if(vap(v))																			{
 		A *a=v2a(v);
 		for(AZ i=0,rl=a->s[a->r-1];i<a->l;++i)												{
@@ -157,6 +158,7 @@ void pv(V v)																				{
 				C vF:printf("%f ",af(a)[i]);B;
 				C vQ:printf("$%"PRIu32" ",aq(a)[i]);B;
 				C vY:printf(".%"PRIu32" ",v2y(v));B;
+				C vS:printf("{%*.s} ",slen(v2s(v)),v2s(v));B;
 				default:puts("other value ");												}}}
 	else {puts("other value");}																}
 

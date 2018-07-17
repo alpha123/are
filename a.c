@@ -146,6 +146,7 @@ r0dnc(mod,opr,fmod)
 
 #define di() (*(U32 *)(b+pc+1))
 #define df() (*(F64 *)(b+pc+1))
+#define dp() (*(UIP *)(b+pc+1))
 #define call(inc,p) do{assert(rsp<AMD);rs[rsp++]=pc+inc;pc=(p);}while(0)
 #define dy(bc,fn) C bc:w=po();a=po();pu(fn(a,w));++pc;B;
 void eval(BC *bc,U32 pc)																	{
@@ -154,6 +155,7 @@ void eval(BC *bc,U32 pc)																	{
 	else while(pc<bc->l)switch(b[pc])														{
 		C bcPushI:pu(i2v((I32)di()));pc+=5;B;
 		C bcPushF:pu(f2v(df()));pc+=9;B;
+		C bcPushS:pu(s2v((S)dp()));pc+=1+szof(UIP);B;
 		C bcMkArray:mka(di());pc+=5;B;
 		C bcQuot:pu(q2v(pc+5));pc+=5+di();B;
 		C bcJmp:pc+=5+di();B;
