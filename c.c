@@ -19,9 +19,6 @@
  * - short word (1 codepoint)
  * - punctuation: ()[]{};
  *
- * ; can be either tSC or tW depending on context. It is a separator when
- * inside ()[]{} or a word (return) otherwise.
- *
  * There's a trick used here: enum values for the punctuation tokens are
  * '()[]{};' - '(' (the lowest UTF-8 value), which means the tokenizer can
  * set the token value for those by simply subtracting '(' from the current
@@ -38,11 +35,9 @@ rfn(rf, t->t=tF;F64 wp=t->i,f=0.0,d=10.0;while(isdigit(*s)){f+=(F64)(*s-'0')/d;d
 rfn(rnum, l=ri(t,z,s);if(s[1]=='.'&&z>2){l+=rf(t,z-2,s+2)+1;})
 rfn(ry, l=rw(t,z-1,s+1)+1;t->t=tY)
 USZ nt(T *t,USZ z,U8B s[z])																	{
-	U8 ip=0;USZ l=0;while(isspace(*s)){++l;++s;}
+	USZ l=0;while(isspace(*s)){++l;++s;}
 	switch(*s)																				{
-		C ANY('(','[','{'):t->t=*s-'(';++ip;R l+1;
-		C ANY(')',']','}'):t->t=*s-'(';--ip;R l+1;
-		C ';':t->t=(ip==0?tSW:';'-'(');t->c=0x3B;R l+1;
+		C ANY('(',')','[',']','{','}',';'):t->t=*s-'(';R l+1;
 		C '.':R l+ry(t,z,s);
 		default:R l+CONDE(isdigit(*s),rnum(t,z,s), isalpha(*s),rw(t,z,s), rsw(t,z,s));		}}
 
@@ -91,6 +86,7 @@ USZ ct(BC *b,WD **d,USZ z,U8B s[z])															{
 		C tF:cf(b,t.f);B;
 		C tLB:i+=cq(b,d,z-tl,s+tl);B;
 		C tLP:i+=cr(b,d,z-tl,s+tl);B;
+		C tSC:emit(bcRet);B;
 		C tSW:switch(t.c)																	{
 			C 0x27:i+=csq(b,d,z-tl,s+tl);B;
 			C 0x2B:emit(bcAdd);B;
@@ -99,7 +95,6 @@ USZ ct(BC *b,WD **d,USZ z,U8B s[z])															{
 			C 0xF7:emit(bcDiv);B;
 			C 0x7C:emit(bcMod);B;
 			C 0x3A:i+=cd(b,d,z-tl,s+tl);B;
-			C 0x3B:emit(bcRet);B;
 			C 0x3B9:emit(bcIota);B;
 			C 0x3C1:emit(bcReshape);B;
 			C 0x3C3:emit(bcShape);B;
