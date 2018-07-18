@@ -16,6 +16,12 @@
 
 #define ARE_RPUSH_SIZE 64
 
+#define ARE_NESTED_ADICITY_CALC_DEPTH 16
+#define ANACD ARE_NESTED_ADICITY_CALC_DEPTH
+
+#define ARE_MAX_CLEAVE_ADICITY 32
+#define AMCA ARE_MAX_CLEAVE_ADICITY
+
 // index origin
 #define IO 1
 
@@ -25,15 +31,23 @@ U32 rs[AMD];
 U16 rsp=0;
 V rp[ARE_RPUSH_SIZE];
 U16 rpp=0;
+U8 pucs[ANACD]; // push count stack
+U8 pocs[ANACD]; // pop count stack
+U8 pcsp=0; // counter for both stacks
 jmp_buf ej;
+
+/**
+* Saturating subtraction by correcting overflow, gcc and clang generate optimal code from this.
+*/
+U8 ssub8(U8 a,U8 w){U8 o=a-w;if(o>a){o=0;}R o;}
 
 void ae(E e){longjmp(ej,e);}
 
-void pu(V a)																				{
-	if(sp==ARE_STACK_SIZE){ae(eSO);}
-	s[sp++]=a;																				}
+void pu_(V a){if(sp==ARE_STACK_SIZE){ae(eSO);}s[sp++]=a;}
+void pu(V a){pu_(a);++pucs[pcsp];}
 V po(void)																					{
 	if(sp==0){ae(eSO);}
+	pocs[pcsp]+=pucs[pcsp]==0;pucs[pcsp]=ssub8(pucs[pcsp],1);
 	R s[--sp];																				}
 
 Q poq(void){V v=po();if(vqp(v)){R v2q(v);}pu(v);ae(eT);R 0;}
@@ -144,6 +158,18 @@ r0dnc(idiv,opd,opd)
 #define opr(x,y) ((x)%(y))
 r0dnc(mod,opr,fmod)
 
+void eval(BC *bc,U32 pc);
+// nested eval, handle setting and restoring the error jump location
+void nevq(BC *bc,Q q)																		{
+	assert(rsp<AMD);jmp_buf oe;mc(&oe,&ej,sizeof(jmp_buf)); // not guaranteed to work
+	rs[rsp++]=bc->l;eval(bc,q);mc(&ej,&oe,sizeof(jmp_buf));									}
+
+U8 ega(BC *bc,Q q){++pcsp;assert(pcsp<ANACD);nevq(bc,q);U8 a=pocs[pcsp];pocs[pcsp]=pucs[pcsp]=0;--pcsp;R a;}
+void cqa(BC *bc,A *q)																		{
+	V ss[ARE_STACK_SIZE],h[AMCA];DO(sp,ss[i]=cv(s[i]))
+	Q fst=aq(q)[0];U8 ad=ega(bc,fst);mc(h,ss,ad*szof(V));
+	DO(q->l-1,DO2(ad,pu_(i==i_-1?h[j]:cv(h[j])))nevq(bc,aq(q)[i+1]))						}
+
 #define di() (*(U32 *)(b+pc+1))
 #define df() (*(F64 *)(b+pc+1))
 #define dp() (*(UIP *)(b+pc+1))
@@ -161,7 +187,7 @@ void eval(BC *bc,U32 pc)																	{
 		C bcJmp:pc+=5+di();B;
 		C bcRet:assert(rsp>0);pc=rs[--rsp];B;
 		C bcCall:call(5,di());B;
-		C bcCallQ:call(1,poq());B;
+		C bcCallQ:a=po();COND(vt(a), vQ,call(1,v2q(a)), vA,cqa(bc,v2a(a));++pc, ae(eT));B;
 		C bcDip:q=poq();assert(rpp<ARE_RPUSH_SIZE);rp[rpp++]=po();call(1,q);B;
 		C bcPopRP:assert(rpp>0);pu(rp[--rpp]);++pc;B;
 		C bcIota:pu(iota(po()));++pc;B;

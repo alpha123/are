@@ -45,8 +45,10 @@ typedef U8 U8B; // utf8 byte
 
 //#define clz(a) _Generic((a),unsigned int:__builtin_clz((a)),unsigned long:__builtin_clzl((a)),unsigned long long:__builtin_clzll(a))
 
-// Cute trick from Chromium to error in some cases where a pointer is passed to countof() instead of an array. Causes an error if
-// sizeof(ptr) % sizeof(*ptr) != 0.
+/**
+ * Cute trick from Chromium to error in some cases where a pointer is passed to
+ * countof() instead of an array. Causes an error if sizeof(ptr) % sizeof(*ptr) != 0.
+ */
 #define cntof(a) ((sizeof(a)/sizeof 0[a])/(USZ)(!(sizeof(a)%sizeof 0[a])))
 #define msz(T,m) (sizeof(((T*)0)->m)) // member size
 

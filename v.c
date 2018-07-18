@@ -142,6 +142,14 @@ P vdp(V v){R (v.u64&VTAG)==VTD;}
 V d2v(D d){V v;v.u64=VTD|(UIP)d;R v;}
 D v2d(V v){assert(vdp(v));R (D)(v.u64&VMASKPTR);}
 
+V cv(V v)																					{
+	A *a,*a2;
+	switch(vt(v)){
+		C vA:a=v2a(v);a2=anew(a->t,a->r,a->s);mc(a2->a,a->a,a->l*elsz(a->t));R a2v(a2);
+		C vS:R s2v(snew(slen(v2s(v)),v2s(v)));
+		C vD: /* copy this when D is implemented */ R v;
+		default: R v;																		}}
+
 void pv(V v)																				{
 	if(vip(v)){printf("%"PRIi32,v2i(v));}
 	else if(vfp(v)){printf("%f",v2f(v));}
