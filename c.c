@@ -70,13 +70,13 @@ USZ cr(BC *b,WD **d,USZ z,U8B s[z])																	{
 	T t;USZ i=0,tl;U32 tc=0;
 	while(i<z){rt();if(t.t==tRP){i+=tl;B;}++tc;i+=ct(b,d,z-i,s+i);}emit(bcMkArray);emiti(tc);R i;	}
 USZ cq_(BC *b,WD **d,USZ z,U8B s[z],U32 *nq)														{
-	T t;USZ i=0,tl;emit(bcQuot);emiti(0);U32 o=b->l;bool p=1;
+	T t;USZ i=0,tl;emit(bcQuot);emiti(0);U32 o=b->l;
 	while(i<z)																						{
 		rt();
 		if(t.t==tRB){i+=tl;emit(bcRet);B;}
-		else if(t.t==tSC){i+=tl;++*nq;p=0;emit(bcRet);seti(o-szof(U32),b->l-o);i+=cq_(b,d,z-i,s+i,nq);}
+		else if(t.t==tSC){i+=tl;++*nq;emit(bcRet);seti(o-szof(U32),b->l-o);i+=cq_(b,d,z-i,s+i,nq);R i;}
 		else{i+=ct(b,d,z-i,s+i);}																	}
-	if(p){seti(o-szof(U32),b->l-o);}R i;															}
+	seti(o-szof(U32),b->l-o);R i;																	}
 USZ cq(BC *b,WD **d,USZ z,U8B s[z]){U32 nq=1;USZ l=cq_(b,d,z,s,&nq);if(nq>1){emit(bcMkArray);emiti(nq);}R l;}
 USZ csq(BC *b,WD **d,USZ z,U8B s[z])																{
 	emit(bcQuot);emiti(0);U32 o=b->l;USZ i=ct(b,d,z,s);emit(bcRet);seti(o-szof(U32),b->l-o);R i;	}
