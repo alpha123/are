@@ -200,7 +200,7 @@ void eval(BC *bc,U32 pc)																	{
 		C bcPopRP:assert(rpp>0);pu(rp[--rpp]);++pc;B;
 		C bcIota:pu(iota(po()));++pc;B;
 		C bcReduce:q=poq();a=po();if(!vap(a)){ae(eT);}pu(a2v(rd(bc,q,v2a(a))));++pc;B;
-		C bcShape:pu(shp(s[sp-1]));++pc;B;
+		C bcShape:pu(shp(po()));++pc;B;
 		dy(bcReshape,rshp)
 		dy(bcAdd,add)
 		dy(bcMul,mul)
