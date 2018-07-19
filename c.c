@@ -45,7 +45,7 @@ USZ nt(T *t,USZ z,U8B s[z])																	{
 
 typedef enum{
 	bcPushI, bcPushF, bcPushS, bcMkArray, bcJmp, bcRet, bcCall, bcCallQ, bcDip, bcKeep, bcPopRP,
-	bcQuot, bcDrop, bcSwap, bcDup, bcIota, bcShape, bcReshape, bcAdd, bcMul, bcSub, bcDiv,
+	bcQuot, bcDrop, bcSwap, bcDup, bcIota, bcIndex, bcShape, bcReshape, bcAdd, bcMul, bcSub, bcDiv,
 	bcMod, bcMin, bcMax, bcReduce
 }BCT;
 typedef struct{U32 z,l;U8 *b;}BC;
@@ -99,6 +99,7 @@ USZ ct(BC *b,WD **d,USZ z,U8B s[z])															{
 		C tLP:i+=cr(b,d,z-tl,s+tl);B;
 		C tSC:emit(bcRet);B;
 		C tSW:switch(t.c)																	{
+			C 0x22:emit(bcIndex);B;
 			C 0x27:i+=csq(b,d,z-tl,s+tl);B;
 			C 0x2B:emit(bcAdd);B;
 			C 0x2D:emit(bcSub);B;
@@ -141,6 +142,7 @@ void dumpbc(BC *b)																			{
 			C bcDip:puts("DIP");B;
 			C bcPopRP:puts("POPRP");B;
 			C bcIota:puts("IOTA");B;
+			C bcIndex:puts("INDEX");B;
 			C bcReshape:puts("RESHAPE");B;
 			C bcShape:puts("SHAPE");B;
 			C bcAdd:puts("ADD");B;
@@ -154,6 +156,7 @@ void dumpbc(BC *b)																			{
 			default:puts("?");																}}}
 #undef decodei
 #undef decodef
+#undef decodep
 
 #if AREPL
 #include "linenoise.c"

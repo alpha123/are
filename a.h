@@ -101,6 +101,9 @@ typedef U8 U8B; // utf8 byte
 #define CONDEIMPL5(p,f,...) (p)?({f;}):CONDEIMPL3(__VA_ARGS__)
 #define CONDEIMPL7(p,f,...) (p)?({f;}):CONDEIMPL5(__VA_ARGS__)
 #define CONDEIMPL9(p,f,...) (p)?({f;}):CONDEIMPL7(__VA_ARGS__)
+#define CONDEIMPL11(p,f,...) (p)?({f;}):CONDEIMPL9(__VA_ARGS__)
+#define CONDEIMPL13(p,f,...) (p)?({f;}):CONDEIMPL11(__VA_ARGS__)
+#define CONDEIMPL15(p,f,...) (p)?({f;}):CONDEIMPL13(__VA_ARGS__)
 #define CONDE(...) (CAT(CONDEIMPL,VA_NARGS(__VA_ARGS__))(__VA_ARGS__))
 
 typedef enum{ eOK, eSO, eT, eL, eR, eD }E;
