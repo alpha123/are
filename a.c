@@ -170,6 +170,17 @@ r0dnc(idiv,opd,opd)
 #define opr(x,y) ((x)%(y))
 r0dnc(mod,opr,fmod)
 
+#define opeq(x,y) ((x)==(y))
+r0dc(eq,opeq,opeq)
+#define opgt(x,y) ((x)>(y))
+r0dnc(gt,opgt,opgt)
+#define oplt(x,y) ((x)<(y))
+r0dnc(lt,oplt,oplt)
+#define opgte(x,y) ((x)>=(y))
+r0dnc(gte,opgte,opgte)
+#define oplte(x,y) ((x)<=(y))
+r0dnc(lte,oplte,oplte)
+
 #define liftr0mnum(iop,fop) \
 	switch(aa->t){C vI:DO(aa->l,ai(aa)[i]=iop(ai(aa)[i]))B;C vF:DO(aa->l,af(aa)[i]=fop(af(aa)[i]))B;default:ae(eT);}
 
@@ -245,19 +256,12 @@ void eval(BC *bc,U32 pc)																	{
 		C bcPopRP:assert(rpp>0);pu(rp[--rpp]);++pc;B;
 		C bcIota:pu(iota(po()));++pc;B;
 		C bcReduce:q=poq();a=po();if(!vap(a)){ae(eT);}pu(a2v(rd(bc,q,v2a(a))));++pc;B;
-		mo(bcShape,shp)
-		mo(bcNeg,neg)
-		mo(bcNot,not)
-		mo(bcSgn,isgn)
-		dy(bcReshape,rshp)
+		mo(bcNeg,neg)mo(bcNot,not)mo(bcSgn,isgn)
+		mo(bcShape,shp)dy(bcReshape,rshp)
 		dy(bcIndex,idx)
-		dy(bcAdd,add)
-		dy(bcMul,mul)
-		dy(bcSub,sub)
-		dy(bcDiv,idiv)
-		dy(bcMod,mod)
-		dy(bcMin,imin)
-		dy(bcMax,imax)
+		dy(bcAdd,add)dy(bcMul,mul)dy(bcSub,sub)dy(bcDiv,idiv)dy(bcMod,mod)
+		dy(bcMin,imin)dy(bcMax,imax)
+		dy(bcEq,eq)dy(bcGt,gt)dy(bcLt,lt)dy(bcGte,gte)dy(bcLte,lte)
 		default:puts("unimplemented opcode");++pc;											}}
 
 #include "linenoise.c"

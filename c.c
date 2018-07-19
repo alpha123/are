@@ -46,7 +46,8 @@ USZ nt(T *t,USZ z,U8B s[z])																	{
 typedef enum{
 	bcPushI, bcPushF, bcPushS, bcMkArray, bcJmp, bcRet, bcCall, bcCallQ, bcSwap, bcDrop, bcDup,
 	bcDip, bcKeep, bcPopRP, bcQuot, bcIota, bcIndex, bcShape, bcReshape, bcNeg, bcNot, bcSgn,
-	bcAdd, bcMul, bcSub, bcDiv,	bcMod, bcMin, bcMax, bcReduce
+	bcAdd, bcMul, bcSub, bcDiv,	bcMod, bcMin, bcMax, bcEq, bcGt, bcLt, bcGte, bcLte,
+	bcReduce
 }BCT;
 typedef struct{U32 z,l;U8 *b;}BC;
 BC *bcnew(USZ iz){BC *b=ca(1,szof(BC));b->z=iz;b->b=ma(iz);R b;}
@@ -108,6 +109,12 @@ USZ ct(BC *b,WD **d,USZ z,U8B s[z])															{
 			C 0x7C:emit(bcMod);B;
 			C 0x7E:emit(bcNeg);B;
 			C 0xAC:emit(bcNot);B;
+			C 0x3D:emit(bcEq);B;
+			C 0x2260:emit(bcEq);emit(bcNot);B;
+			C 0x3E:emit(bcGt);B;
+			C 0x3C:emit(bcLt);B;
+			C 0x2265:emit(bcGte);B;
+			C 0x2264:emit(bcLte);B;
 			C 0x2F:emit(bcReduce);B;
 			C 0x3A:i+=cd(b,d,z-tl,s+tl);B;
 			C 0x3B9:emit(bcIota);B;
@@ -145,25 +152,16 @@ void dumpbc(BC *b)																			{
 			C bcRet:puts("RET");B;
 			C bcCall:printf("CALL %"PRIu32"\n",decodei());i+=4;B;
 			C bcCallQ:puts("CALLQ");B;
-			C bcSwap:puts("SWAP");B;
-			C bcDrop:puts("DROP");B;
-			C bcDup:puts("DUP");B;
-			C bcDip:puts("DIP");B;
-			C bcPopRP:puts("POPRP");B;
-			C bcIota:puts("IOTA");B;
-			C bcIndex:puts("INDEX");B;
-			C bcReshape:puts("RESHAPE");B;
-			C bcShape:puts("SHAPE");B;
-			C bcNeg:puts("NEG");B;
-			C bcNot:puts("NOT");B;
-			C bcSgn:puts("SGN");B;
-			C bcAdd:puts("ADD");B;
-			C bcMul:puts("MUL");B;
-			C bcSub:puts("SUB");B;
-			C bcDiv:puts("DIV");B;
-			C bcMod:puts("MOD");B;
-			C bcMin:puts("MIN");B;
-			C bcMax:puts("MAX");B;
+			C bcSwap:puts("SWAP");B;C bcDrop:puts("DROP");B;C bcDup:puts("DUP");B;
+			C bcDip:puts("DIP");B;C bcPopRP:puts("POPRP");B;
+			C bcIota:puts("IOTA");B;C bcIndex:puts("INDEX");B;
+			C bcShape:puts("SHAPE");B;C bcReshape:puts("RESHAPE");B;
+			C bcNeg:puts("NEG");B;C bcNot:puts("NOT");B;C bcSgn:puts("SGN");B;
+			C bcAdd:puts("ADD");B;C bcMul:puts("MUL");B;C bcSub:puts("SUB");B;
+			C bcDiv:puts("DIV");B;C bcMod:puts("MOD");B;
+			C bcMin:puts("MIN");B;C bcMax:puts("MAX");B;
+			C bcEq:puts("EQ");B;C bcGt:puts("GT");B;C bcLt:puts("LT");B;
+			C bcGte:puts("GTE");B;C bcLte:puts("LTE");B;
 			C bcReduce:puts("REDUCE");B;
 			default:puts("?");																}}}
 #undef decodei
