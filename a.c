@@ -170,6 +170,14 @@ void cqa(BC *bc,A *q)																		{
 	Q fst=aq(q)[0];U8 ad=ega(bc,fst);mc(h,ss,ad*szof(V));
 	DO(q->l-1,DO2(ad,pu_(i==i_-1?h[j]:cv(h[j])))nevq(bc,aq(q)[i+1]))						}
 
+#define dord(ax,x2v,v2x)DO(l,pu(x2v(ax(a)[i*rl]));DO2(rl-1,pu(x2v(ax(a)[j+1+i*rl]));nevq(bc,q))ax(o)[i]=v2x(po()))
+A *rd(BC *bc,Q q,A *a)																		{
+	if(a->l<1){ae(eL);}
+	A *o=a->r==1?anew(a->t,1,(AZ[1]){1}):anew(a->t,a->r-1,a->s);USZ l=o->l,rl=a->s[a->r-1];
+	COND(a->t, vI,dord(ai,i2v,v2i), vF,dord(af,f2v,v2f), vQ,dord(aq,q2v,v2q), vY,dord(ay,y2v,v2y),
+	           vS,dord(as,s2v,v2s), vD,dord(ad,d2v,v2d))
+	R o;																					}
+
 #define di() (*(U32 *)(b+pc+1))
 #define df() (*(F64 *)(b+pc+1))
 #define dp() (*(UIP *)(b+pc+1))
@@ -191,6 +199,7 @@ void eval(BC *bc,U32 pc)																	{
 		C bcDip:q=poq();assert(rpp<ARE_RPUSH_SIZE);rp[rpp++]=po();call(1,q);B;
 		C bcPopRP:assert(rpp>0);pu(rp[--rpp]);++pc;B;
 		C bcIota:pu(iota(po()));++pc;B;
+		C bcReduce:q=poq();a=po();if(!vap(a)){ae(eT);}pu(a2v(rd(bc,q,v2a(a))));++pc;B;
 		C bcShape:pu(shp(s[sp-1]));++pc;B;
 		dy(bcReshape,rshp)
 		dy(bcAdd,add)
