@@ -230,7 +230,7 @@ int main(int argc, const char **argv)														{
 	pu(a2v(ddd));*/
 	while((ln=linenoise("are> ")))															{
 		cmpl(b,&d,strlen(ln),ln);
-		dumpbc(b);
+		//dumpbc(b);
 		eval(b,obl);
 		obl=b->l;
 		for(U32 i=sp;i>0;--i){pv(s[i-1]);putchar('\n');}
