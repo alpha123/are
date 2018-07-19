@@ -44,9 +44,9 @@ USZ nt(T *t,USZ z,U8B s[z])																	{
 		default:R l+CONDE(isdigit(*s),rnum(t,z,s), isalpha(*s),rw(t,z,s), rsw(t,z,s));		}}
 
 typedef enum{
-	bcPushI, bcPushF, bcPushS, bcMkArray, bcJmp, bcRet, bcCall, bcCallQ, bcDip, bcKeep, bcPopRP,
-	bcQuot, bcDrop, bcSwap, bcDup, bcIota, bcIndex, bcShape, bcReshape, bcAdd, bcMul, bcSub, bcDiv,
-	bcMod, bcMin, bcMax, bcReduce
+	bcPushI, bcPushF, bcPushS, bcMkArray, bcJmp, bcRet, bcCall, bcCallQ, bcSwap, bcDrop, bcDup,
+	bcDip, bcKeep, bcPopRP, bcQuot, bcIota, bcIndex, bcShape, bcReshape,
+	bcAdd, bcMul, bcSub, bcDiv,	bcMod, bcMin, bcMax, bcReduce
 }BCT;
 typedef struct{U32 z,l;U8 *b;}BC;
 BC *bcnew(USZ iz){BC *b=ca(1,szof(BC));b->z=iz;b->b=ma(iz);R b;}
@@ -112,6 +112,9 @@ USZ ct(BC *b,WD **d,USZ z,U8B s[z])															{
 			C 0x3C1:emit(bcReshape);B;
 			C 0x3C3:emit(bcShape);B;
 			C 0x2218:emit(bcCallQ);B;
+			C 0x2021:emit(bcDup);B;
+			C 0x21A7:emit(bcDrop);B;
+			C 0x296F:emit(bcSwap);B;
 			C 0x2193:emit(bcDip);emit(bcPopRP);B;
 			C 0x2B71:emit(bcKeep);B;
 			C 0x25B3:emit(bcMax);B;
@@ -139,6 +142,9 @@ void dumpbc(BC *b)																			{
 			C bcRet:puts("RET");B;
 			C bcCall:printf("CALL %"PRIu32"\n",decodei());i+=4;B;
 			C bcCallQ:puts("CALLQ");B;
+			C bcSwap:puts("SWAP");B;
+			C bcDrop:puts("DROP");B;
+			C bcDup:puts("DUP");B;
 			C bcDip:puts("DIP");B;
 			C bcPopRP:puts("POPRP");B;
 			C bcIota:puts("IOTA");B;

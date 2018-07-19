@@ -208,6 +208,9 @@ void eval(BC *bc,U32 pc)																	{
 		C bcRet:assert(rsp>0);pc=rs[--rsp];B;
 		C bcCall:call(5,di());B;
 		C bcCallQ:a=po();COND(vt(a), vQ,call(1,v2q(a)), vA,cqa(bc,v2a(a));++pc, ae(eT));B;
+		C bcDrop:po();++pc;B;
+		C bcSwap:a=po();w=po();pu(a);pu(w);++pc;B;
+		C bcDup:pu(cv(s[sp-1]));++pc;B;
 		C bcDip:q=poq();assert(rpp<ARE_RPUSH_SIZE);rp[rpp++]=po();call(1,q);B;
 		C bcPopRP:assert(rpp>0);pu(rp[--rpp]);++pc;B;
 		C bcIota:pu(iota(po()));++pc;B;
