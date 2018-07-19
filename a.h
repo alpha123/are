@@ -39,7 +39,7 @@ typedef U8 U8B; // utf8 byte
 #define max(a,b) ({__typeof(a)_x=(a);__typeof(b)_y=(b);_x>_y?_x:_y;})
 #define min(a,b) ({__typeof(a)_x=(a);__typeof(b) _y=(b);_x<_y?_x:_y;})
 
-#define sgn(a) (((a)!=0)|(a>>sizeof(a)*8-1))
+#define sgn(a) (((a)!=0)|(a>>(sizeof(a)*8-1)))
 
 #define swap(a,b) do{__typeof(a)_a=(a);a=b;b=_a;}while(0)
 

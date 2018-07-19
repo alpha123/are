@@ -45,7 +45,7 @@ USZ nt(T *t,USZ z,U8B s[z])																	{
 
 typedef enum{
 	bcPushI, bcPushF, bcPushS, bcMkArray, bcJmp, bcRet, bcCall, bcCallQ, bcSwap, bcDrop, bcDup,
-	bcDip, bcKeep, bcPopRP, bcQuot, bcIota, bcIndex, bcShape, bcReshape,
+	bcDip, bcKeep, bcPopRP, bcQuot, bcIota, bcIndex, bcShape, bcReshape, bcNeg, bcNot, bcSgn,
 	bcAdd, bcMul, bcSub, bcDiv,	bcMod, bcMin, bcMax, bcReduce
 }BCT;
 typedef struct{U32 z,l;U8 *b;}BC;
@@ -106,12 +106,15 @@ USZ ct(BC *b,WD **d,USZ z,U8B s[z])															{
 			C 0xD7:emit(bcMul);B;
 			C 0xF7:emit(bcDiv);B;
 			C 0x7C:emit(bcMod);B;
+			C 0x7E:emit(bcNeg);B;
+			C 0xAC:emit(bcNot);B;
 			C 0x2F:emit(bcReduce);B;
 			C 0x3A:i+=cd(b,d,z-tl,s+tl);B;
 			C 0x3B9:emit(bcIota);B;
 			C 0x3C1:emit(bcReshape);B;
 			C 0x3C3:emit(bcShape);B;
 			C 0x2218:emit(bcCallQ);B;
+			C 0x2B59:emit(bcSgn);B;
 			C 0x2021:emit(bcDup);B;
 			C 0x21A7:emit(bcDrop);B;
 			C 0x296F:emit(bcSwap);B;
@@ -151,6 +154,9 @@ void dumpbc(BC *b)																			{
 			C bcIndex:puts("INDEX");B;
 			C bcReshape:puts("RESHAPE");B;
 			C bcShape:puts("SHAPE");B;
+			C bcNeg:puts("NEG");B;
+			C bcNot:puts("NOT");B;
+			C bcSgn:puts("SGN");B;
 			C bcAdd:puts("ADD");B;
 			C bcMul:puts("MUL");B;
 			C bcSub:puts("SUB");B;

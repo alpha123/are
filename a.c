@@ -170,6 +170,35 @@ r0dnc(idiv,opd,opd)
 #define opr(x,y) ((x)%(y))
 r0dnc(mod,opr,fmod)
 
+#define liftr0mnum(iop,fop) \
+	switch(aa->t){C vI:DO(aa->l,ai(aa)[i]=iop(ai(aa)[i]))B;C vF:DO(aa->l,af(aa)[i]=fop(af(aa)[i]))B;default:ae(eT);}
+
+#define opneg(a) -(a)
+V neg(V a)																					{
+	A *aa;
+	switch(vt(a))																			{
+		C vI:R i2v(-v2i(a));C vF:R f2v(-v2f(a));
+		C vA:aa=v2a(a);liftr0mnum(opneg,opneg)R a;
+		default:ae(eT);																		}}
+
+#define opnoti(a) CONDE((a)==0,1,0)
+#define opnotf(a) CONDE((a)==0.0,1.0,0.0)
+V not(V a)																					{
+	A *aa;
+	switch(vt(a)){
+		//C vI:R CONDE(v2i(a)==0,i2v(1),i2v(0));C vF:R CONDE(v2f(a)==0.0,f2v(1.0),f2v(0.0));
+		C vI:R i2v(opnoti(v2i(a)));C vF:R f2v(opnotf(v2f(a)));
+		C vA:aa=v2a(a);liftr0mnum(opnoti,opnotf)R a;
+		default:ae(eT);																		}}
+
+#define opsgnf(a) CONDE((a)>0.0,1.0,(a)<0.0,-1.0,0.0)
+V isgn(V a)																					{
+	A *aa;
+	switch(vt(a))																			{
+		C vI:R i2v(sgn(v2i(a)));C vF:R f2v(opsgnf(v2f(a)));
+		C vA:aa=v2a(a);liftr0mnum(sgn,opsgnf)R a;
+		default:ae(eT);																		}}
+
 void eval(BC *bc,U32 pc);
 // nested eval, handle setting and restoring the error jump location
 void nevq(BC *bc,Q q)																		{
@@ -194,6 +223,7 @@ A *rd(BC *bc,Q q,A *a)																		{
 #define df() (*(F64 *)(b+pc+1))
 #define dp() (*(UIP *)(b+pc+1))
 #define call(inc,p) do{assert(rsp<AMD);rs[rsp++]=pc+inc;pc=(p);}while(0)
+#define mo(bc,fn) C bc:pu(fn(po()));++pc;B;
 #define dy(bc,fn) C bc:w=po();a=po();pu(fn(a,w));++pc;B;
 void eval(BC *bc,U32 pc)																	{
 	U32 i;E e;Q q;U8 *b=bc->b;V a,w;
@@ -215,7 +245,10 @@ void eval(BC *bc,U32 pc)																	{
 		C bcPopRP:assert(rpp>0);pu(rp[--rpp]);++pc;B;
 		C bcIota:pu(iota(po()));++pc;B;
 		C bcReduce:q=poq();a=po();if(!vap(a)){ae(eT);}pu(a2v(rd(bc,q,v2a(a))));++pc;B;
-		C bcShape:pu(shp(po()));++pc;B;
+		mo(bcShape,shp)
+		mo(bcNeg,neg)
+		mo(bcNot,not)
+		mo(bcSgn,isgn)
 		dy(bcReshape,rshp)
 		dy(bcIndex,idx)
 		dy(bcAdd,add)
