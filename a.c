@@ -166,9 +166,9 @@ void nevq(BC *bc,Q q)																		{
 
 U8 ega(BC *bc,Q q){++pcsp;assert(pcsp<ANACD);nevq(bc,q);U8 a=pocs[pcsp];pocs[pcsp]=pucs[pcsp]=0;--pcsp;R a;}
 void cqa(BC *bc,A *q)																		{
-	V ss[ARE_STACK_SIZE],h[AMCA];DO(sp,ss[i]=cv(s[i]))
-	Q fst=aq(q)[0];U8 ad=ega(bc,fst);mc(h,ss,ad*szof(V));
-	DO(q->l-1,DO2(ad,pu_(i==i_-1?h[j]:cv(h[j])))nevq(bc,aq(q)[i+1]))						}
+	V h[ARE_STACK_SIZE];U32 hsp=sp;DO(sp,h[i]=cv(s[i]))Q fst=aq(q)[0];U8 ad=ega(bc,fst);
+	DO(q->l-1,DO2(ad,pu_(i==i_-1?h[hsp-ad+j]:cv(h[hsp-ad+j])))nevq(bc,aq(q)[i+1]))			
+	DO(hsp-ad,vfree(h[i]))																	}
 
 #define dord(ax,x2v,v2x)DO(l,pu(x2v(ax(a)[i*rl]));DO2(rl-1,pu(x2v(ax(a)[j+1+i*rl]));nevq(bc,q))ax(o)[i]=v2x(po()))
 A *rd(BC *bc,Q q,A *a)																		{

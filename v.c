@@ -142,6 +142,8 @@ P vdp(V v){R (v.u64&VTAG)==VTD;}
 V d2v(D d){V v;v.u64=VTD|(UIP)d;R v;}
 D v2d(V v){assert(vdp(v));R (D)(v.u64&VMASKPTR);}
 
+void vfree(V v){COND(vt(v), vA,afree(v2a(v)), vS,sfree(v2s(v)))}
+
 V cv(V v)																					{
 	A *a,*a2;
 	switch(vt(v)){
