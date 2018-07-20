@@ -101,6 +101,23 @@ V idx(V a,V w)																								{
 		R a2v(oa);																							}
 	else{ae(eT);}																							}
 
+V rplct(V a,V w)																			{
+	if(!(vap(a)&&vap(w))){ae(eT);}
+	A *aa=v2a(a),*wa=v2a(w);chka(aa,wa);if(wa->t!=vI){ae(eT);}if(wa->r>aa->r){ae(eR);}
+	AZ wr=wa->s[wa->r-1];AZ rl=0;DO(wr,rl+=ai(wa)[i])
+	for(USZ i=rl;i<wa->l;i+=wr){AZ tl=0;DO(wr,tl+=ai(wa)[i])if(tl!=rl){ae(eL);}}
+	AZ os[AMR];mc(os,aa->s,szof(AZ)*AMR);os[aa->r-1]=rl;A *oa=anew(aa->t,aa->r,os);
+	U8 rd=aa->r-wa->r;USZ ofl=nel(rd,aa->s),ifl=nel(wa->r,aa->s+rd);
+	USZ oi=0;
+	switch(aa->t)																			{
+		C vI:DO(ofl,DO2(ifl,DO3(ai(wa)[j],ai(oa)[oi++]=ai(aa)[j+i*ifl])))B;
+		C vF:DO(ofl,DO2(ifl,DO3(ai(wa)[j],af(oa)[oi++]=af(aa)[j+i*ifl])))B;
+		C vQ:DO(ofl,DO2(ifl,DO3(ai(wa)[j],aq(oa)[oi++]=aq(aa)[j+i*ifl])))B;
+		C vY:DO(ofl,DO2(ifl,DO3(ai(wa)[j],ay(oa)[oi++]=ay(aa)[j+i*ifl])))B;
+		C vS:DO(ofl,DO2(ifl,DO3(ai(wa)[j],as(oa)[oi++]=as(aa)[j+i*ifl])))B;
+		C vD:DO(ofl,DO2(ifl,DO3(ai(wa)[j],ad(oa)[oi++]=ad(aa)[j+i*ifl])))B;					}
+	R a2v(oa);																				}
+
 #define r0dc(name,opi,opf)																		\
 	V name(V a,V w)																			{	\
 	VT at=vt(a),wt=vt(w);A *aa,*wa;I32 wi;F64 wf;												\
@@ -258,7 +275,7 @@ void eval(BC *bc,U32 pc)																	{
 		C bcReduce:q=poq();a=po();if(!vap(a)){ae(eT);}pu(a2v(rd(bc,q,v2a(a))));++pc;B;
 		mo(bcNeg,neg)mo(bcNot,not)mo(bcSgn,isgn)
 		mo(bcShape,shp)dy(bcReshape,rshp)
-		dy(bcIndex,idx)
+		dy(bcIndex,idx)dy(bcReplicate,rplct)
 		dy(bcAdd,add)dy(bcMul,mul)dy(bcSub,sub)dy(bcDiv,idiv)dy(bcMod,mod)
 		dy(bcMin,imin)dy(bcMax,imax)
 		dy(bcEq,eq)dy(bcGt,gt)dy(bcLt,lt)dy(bcGte,gte)dy(bcLte,lte)

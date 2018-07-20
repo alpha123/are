@@ -47,7 +47,7 @@ typedef enum{
 	bcPushI, bcPushF, bcPushS, bcMkArray, bcJmp, bcRet, bcCall, bcCallQ, bcSwap, bcDrop, bcDup,
 	bcDip, bcKeep, bcPopRP, bcQuot, bcIota, bcIndex, bcShape, bcReshape, bcNeg, bcNot, bcSgn,
 	bcAdd, bcMul, bcSub, bcDiv,	bcMod, bcMin, bcMax, bcEq, bcGt, bcLt, bcGte, bcLte,
-	bcReduce
+	bcReplicate, bcReduce
 }BCT;
 typedef struct{U32 z,l;U8 *b;}BC;
 BC *bcnew(USZ iz){BC *b=ca(1,szof(BC));b->z=iz;b->b=ma(iz);R b;}
@@ -129,6 +129,7 @@ USZ ct(BC *b,WD **d,USZ z,U8B s[z])															{
 			C 0x2B71:emit(bcKeep);B;
 			C 0x25B3:emit(bcMax);B;
 			C 0x25BD:emit(bcMin);B;
+			C 0x3003:emit(bcReplicate);B;
 			default:csw(b,t.c);																}
 			B;
 		C tW:cw(b,*d,t.s);B;
@@ -162,6 +163,7 @@ void dumpbc(BC *b)																			{
 			C bcMin:puts("MIN");B;C bcMax:puts("MAX");B;
 			C bcEq:puts("EQ");B;C bcGt:puts("GT");B;C bcLt:puts("LT");B;
 			C bcGte:puts("GTE");B;C bcLte:puts("LTE");B;
+			C bcReplicate:puts("REPLICATE");B;
 			C bcReduce:puts("REDUCE");B;
 			default:puts("?");																}}}
 #undef decodei
