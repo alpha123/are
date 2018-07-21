@@ -118,33 +118,6 @@ V rplct(V a,V w)																			{
 		C vD:DO(ofl,DO2(ifl,DO3(ai(wa)[j],ad(oa)[oi++]=ad(aa)[j+i*ifl])))B;					}
 	R a2v(oa);																				}
 
-//A *cataa(A *a,A *w)																			{
-//	AZ s[AMR];mc(s,a->s,szof s);U8 rd=a->r-w->r;DO(w->r,s[rd+i]+=w->s[i])
-//	A *o=anew(a->t,a->r,s);USZ ofl=nel(rd,a->s),ifl=nel(w->r,a->s+rd),cp=nel(w->r,w->s),z=elsz(a->t);
-//	DO(ofl,mc(o->a+(ofl+cp)*i*z,a->a+ifl*i*z,ifl*z);mc(o->a+((ofl+cp)*i+ifl)*z,w->a,cp*z))
-//	afree(a);afree(w);R o;																	}
-//A *cataa(A *a,A *w){
-//	AZ s[AMR];mc(s,a->s,szof s);s[a->r-1]+=w->s[w->r-1];U8 rd=a->r-w->r;A *o=anew(a->t,a->r,s);
-//	USZ pf=nel(rd,a->s),an=nel(w->r,a->s+rd),wn=nel(w->r,w->s),z=elsz(a->t);
-//	printf("pf %zu : an %zu : wn %zu\n",pf,an,wn);
-//	DO(pf,
-//		printf("dst %zu : src %zu : n %zu\n",(an+wn)*i,an*i,an);
-//		mc(o->a+(an+wn)*i*z,a->a+an*i*z,an*z);
-//		mc(o->a+((an+wn)*i+an)*z,w->a,wn*z)
-//		)
-//	afree(a);afree(w);R o;
-//}
-//A *cataa(A *a,A *w){
-//	AZ s[AMR];mc(s,a->s,szof s);s[a->r-1]+=w->s[w->r-1];A *o=anew(a->t,a->r,s);
-//	USZ apf=nel(a->r-1,a->s),wpf=nel(w->r-1,w->s),an=a->s[a->r-1],wn=w->s[w->r-1],z=elsz(a->t);
-//	DO(wpf,DO2(apf,
-//		printf("[a] dst %zu : src %zu\n",an*i+wn*i,an*i);
-//		mc(o->a+(an*i+wn*i)*z,a->a+an*i*z,an*z);
-//		printf("[w] dst %zu : src %zu\n",an*i+wn*(i+j)+an,wn*j);
-//		mc(o->a+(an*i+wn*(i+j)+an)*z,w->a+wn*i*z,wn*z)
-//		))
-//	afree(a);afree(w);R o;
-//}
 A *cataa(A *a,A *w)																			{
 	AZ s[AMR];mc(s,a->s,szof s);s[a->r-1]+=w->s[w->r-1];A *o=anew(a->t,a->r,s);
 	USZ apf=nel(a->r-1,a->s),wpf=nel(w->r-1,w->s),an=a->s[a->r-1],wn=w->s[w->r-1],z=elsz(a->t);
@@ -341,19 +314,6 @@ int main(int argc, const char **argv)														{
 	A *ddd=anew(vI,3,(AZ[3]){3,3,3});
 	DO(27,ai(ddd)[i]=i+1.0)
 	pu(a2v(ddd));*/
-	/*U8B ex1[]="(1 2 3) (2 3)ρ (4 5 6 7 8),";
-	printf("are> %s\n",ex1);
-	cmpl(b,&d,strlen(ex1),ex1);
-	eval(b,obl);
-	for(U32 i=sp;i>0;--i){pv(s[i-1]);putchar('\n');}
-	po();
-	b->l=0;
-	U8B ex2[]="(1 2 3) (2 3)ρ (4 5 6 7 8 9 10 11 12 13) (2 5)ρ,";
-	printf("are> %s\n",ex2);
-	cmpl(b,&d,strlen(ex2),ex2);
-	eval(b,obl);
-	for(U32 i=sp;i>0;--i){pv(s[i-1]);putchar('\n');}
-	po();*/
 
 	while((ln=linenoise("are> ")))															{
 		cmpl(b,&d,strlen(ln),ln);
