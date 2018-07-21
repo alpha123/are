@@ -167,8 +167,8 @@ void pv(V v)																				{
 				C vI:printf("%"PRIi32" ",ai(a)[i]);B;
 				C vF:printf("%f ",af(a)[i]);B;
 				C vQ:printf("$%"PRIu32" ",aq(a)[i]);B;
-				C vY:printf(".%"PRIu32" ",v2y(v));B;
-				C vS:printf("{%*.s} ",slen(v2s(v)),v2s(v));B;
+				C vY:printf(".%"PRIu32" ",ay(a)[i]);B;
+				C vS:printf("{%.*s} ",(int)slen(as(a)[i]),as(a)[i]);B;
 				default:puts("other value ");												}}}
 	else {puts("other value");}																}
 
