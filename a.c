@@ -19,8 +19,8 @@
 #define ARE_NESTED_ADICITY_CALC_DEPTH 16
 #define ANACD ARE_NESTED_ADICITY_CALC_DEPTH
 
-#define ARE_MAX_CLEAVE_ADICITY 32
-#define AMCA ARE_MAX_CLEAVE_ADICITY
+#define ARE_MAX_RESULT_ADICITY 16
+#define AMRA ARE_MAX_RESULT_ADICITY
 
 // index origin
 #define IO 1
@@ -249,11 +249,21 @@ void nevq(BC *bc,Q q)																		{
 	assert(rsp<AMD);jmp_buf oe;mc(&oe,&ej,sizeof(jmp_buf)); // not guaranteed to work
 	rs[rsp++]=bc->l;eval(bc,q);mc(&ej,&oe,sizeof(jmp_buf));									}
 
-U8 ega(BC *bc,Q q){++pcsp;assert(pcsp<ANACD);nevq(bc,q);U8 a=pocs[pcsp];pocs[pcsp]=pucs[pcsp]=0;--pcsp;R a;}
+void ego(BC *bc,Q q){++pcsp;assert(pcsp<ANACD);nevq(bc,q);}
+void egc(void){pocs[pcsp]=pucs[pcsp]=0;--pcsp;}
+#define weg(bc,q,f) ego(bc,q);f;egc();
 void cqa(BC *bc,A *q)																		{
-	V h[ARE_STACK_SIZE];U32 hsp=sp;DO(sp,h[i]=cv(s[i]))Q fst=aq(q)[0];U8 ad=ega(bc,fst);
+	V h[ARE_STACK_SIZE];U32 hsp=sp;DO(sp,h[i]=cv(s[i]))Q fst=aq(q)[0];weg(bc,fst,U8 ad=pocs[pcsp])
 	DO(q->l-1,DO2(ad,pu(i==i_-1?h[hsp-ad+j]:cv(h[hsp-ad+j])))nevq(bc,aq(q)[i+1]))			
 	DO(hsp-ad,vfree(h[i]))																	}
+
+void callpwr(BC *bc,I32 n,Q q){if(n<0){ae(eD);}DO(n,nevq(bc,q))}
+void callwhile(BC *bc,Q c,Q q)																{
+	V hl[AMRA],ht[AMRA],cr;weg(bc,q,U8 ra=pucs[pcsp])DO(ra,hl[ra-1-i]=cv(s[sp-1-i]))
+	while(1)																				{
+		nevq(bc,q);DO(ra,ht[ra-1-i]=po())DO(ra,pu(hl[i]))DO(ra,pu(cv(ht[i])))mc(hl,ht,szof hl);
+		nevq(bc,c);cr=po();DO(ra,pu(cv(ht[i])))if(!vip(cr)){ae(eT);}if(v2i(cr)!=0){B;}		}
+	DO(ra,vfree(hl[i]))																		}
 
 #define dord(ax,x2v,v2x)DO(l,pu(x2v(ax(a)[i*rl]));DO2(rl-1,pu(x2v(ax(a)[j+1+i*rl]));nevq(bc,q))ax(o)[i]=v2x(po()))
 A *rd(BC *bc,Q q,A *a)																		{
@@ -282,6 +292,7 @@ void eval(BC *bc,U32 pc)																	{
 		C bcRet:assert(rsp>0);pc=rs[--rsp];B;
 		C bcCall:call(5,di());B;
 		C bcCallQ:a=po();COND(vt(a), vQ,call(1,v2q(a)), vA,cqa(bc,v2a(a));++pc, ae(eT));B;
+		C bcCallPower:a=po();q=poq();COND(vt(a), vI,callpwr(bc,v2i(a),q), vQ,callwhile(bc,v2q(a),q), ae(eT))++pc;B;
 		C bcDrop:po();++pc;B;
 		C bcSwap:a=po();w=po();pu(a);pu(w);++pc;B;
 		C bcDup:pu(cv(s[sp-1]));++pc;B;

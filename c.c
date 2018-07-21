@@ -44,9 +44,9 @@ USZ nt(T *t,USZ z,U8B s[z])																	{
 		default:R l+CONDE(isdigit(*s),rnum(t,z,s), isalpha(*s),rw(t,z,s), rsw(t,z,s));		}}
 
 typedef enum{
-	bcPushI, bcPushF, bcPushS, bcMkArray, bcJmp, bcRet, bcCall, bcCallQ, bcSwap, bcDrop, bcDup,
-	bcDip, bcKeep, bcPopRP, bcQuot, bcIota, bcIndex, bcShape, bcReshape, bcNeg, bcNot, bcSgn,
-	bcAdd, bcMul, bcSub, bcDiv,	bcMod, bcMin, bcMax, bcEq, bcGt, bcLt, bcGte, bcLte,
+	bcPushI, bcPushF, bcPushS, bcMkArray, bcJmp, bcRet, bcCall, bcCallQ, bcCallPower,
+	bcSwap, bcDrop, bcDup, bcDip, bcKeep, bcPopRP, bcQuot, bcIota, bcIndex, bcShape, bcReshape,
+	bcNeg, bcNot, bcSgn, bcAdd, bcMul, bcSub, bcDiv, bcMod, bcMin, bcMax, bcEq, bcGt, bcLt, bcGte, bcLte,
 	bcCat, bcReplicate, bcReduce
 }BCT;
 typedef struct{U32 z,l;U8 *b;}BC;
@@ -122,6 +122,7 @@ USZ ct(BC *b,WD **d,USZ z,U8B s[z])															{
 			C 0x3C1:emit(bcReshape);B;
 			C 0x3C3:emit(bcShape);B;
 			C 0x2218:emit(bcCallQ);B;
+			C 0x2365:emit(bcCallPower);B;
 			C 0x2B59:emit(bcSgn);B;
 			C 0x2021:emit(bcDup);B;
 			C 0x21A7:emit(bcDrop);B;
