@@ -308,16 +308,16 @@ void eval(BC *bc,U32 pc)																	{
 		dy(bcEq,eq)dy(bcGt,gt)dy(bcLt,lt)dy(bcGte,gte)dy(bcLte,lte)
 		default:puts("unimplemented opcode");++pc;											}}
 
+#if USE_LINENOISE
 #include "linenoise.c"
 #include "linenoise-utf8.h"
 #include "linenoise-utf8.c"
+#endif
 
 int main(int argc, const char **argv)														{
-	char *ln;
 	BC *b=bcnew(256);
 	WD *d=NULL;
 	U32 obl=0;
-	linenoiseSetEncodingFunctions(linenoiseUtf8PrevCharLen,linenoiseUtf8NextCharLen,linenoiseUtf8ReadCode);
 	// uncomment to get some default arrays (3x3 and 3x3x3) for testing
 	/*A *mat=anew(vI,2,(AZ[2]){3,3});
 	DO(9,ai(mat)[i]=i+1.0)
@@ -326,10 +326,24 @@ int main(int argc, const char **argv)														{
 	DO(27,ai(ddd)[i]=i+1.0)
 	pu(a2v(ddd));*/
 
-	while((ln=linenoise("are> ")))															{
+#if USE_LINENOISE
+	char *ln;
+	linenoiseSetEncodingFunctions(linenoiseUtf8PrevCharLen,linenoiseUtf8NextCharLen,linenoiseUtf8ReadCode);
+	while((ln=linenoise("are> ")))															
+#else
+	char ln[128];
+	printf("are> ");
+	while(fgets(ln,szof ln,stdin))
+#endif
+	{
 		cmpl(b,&d,strlen(ln),ln);
 		//dumpbc(b);
 		eval(b,obl);
 		obl=b->l;
 		for(U32 i=sp;i>0;--i){pv(s[i-1]);putchar('\n');}
-		linenoiseFree(ln);																	}}
+#if USE_LINENOISE
+		linenoiseFree(ln);
+#else
+		printf("are> ");
+#endif
+																		}}
