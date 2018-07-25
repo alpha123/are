@@ -134,6 +134,32 @@ V cat(V a,V w)																				{
 	else{if(at!=wt){ae(eT);}oa=anew(at,1,(AZ[]){2});asv(oa,0,a);asv(oa,1,w);}
 	R a2v(oa);																				}
 
+V take(V a,V w)																						{
+	if(!vip(w)&&(!vap(w)||v2a(w)->t!=vI)){ae(eT);}A *aa,*oa;
+	if(!vap(a))																						{
+		AZ s[]={[0 ... AMR-1]=1};U8 r;AZ idx;
+		if(vip(w)){I32 wi=v2i(w);r=1;s[0]=abs(wi);idx=wi<0?-wi-IO:0;}
+		else																						{
+			aa=v2a(w);if(aa->r>1){ae(eR);}if(aa->l>AMR){ae(eD);}
+			r=aa->l;DO(r,s[i]=abs(ai(aa)[i]))idx=ai(aa)[r-1]<0?-ai(aa)[r-1]-1:0;
+			DO(r-1,idx+=(ai(aa)[r-i-2]<0?-ai(aa)[r-i-2]-1:0)*nel(r-(r-i-1),s+(r-i-1)))				}
+		oa=anew(vt(a),r,s);memset(oa->a,0,oa->l*elsz(oa->t));asv(oa,idx,a);afree(aa);R a2v(oa);		}
+	else if(vip(w))																					{
+		aa=v2a(a);I32 n=v2i(w);if(n==0){ae(eD);}USZ ol=aa->l,z=elsz(aa->t);aa->s[0]=abs(n);aa->l=nel(aa->r,aa->s);
+		if(aa->l>ol)																				{
+			aa=ra(aa,offsetof(A,a)+nel(aa->r,aa->s)*z);
+			if(n<0){memmove(aa->a+(aa->l-ol)*z,aa->a,ol*z);memset(aa->a,0,(aa->l-ol)*z);}
+			else{memset(aa->a+ol*z,0,(aa->l-ol)*z);}												}
+		else if(n<0){memmove(aa->a,aa->a+(ol-aa->l)*z,aa->l*z);}R a2v(aa);							}
+	else																							{
+		aa=v2a(a);A *wa=v2a(w);if(wa->r>1){ae(eR);}if(wa->l!=aa->r){ae(eL);}
+		AZ s[AMR];U8 r=wa->l;DO(r,s[i]=abs(ai(wa)[i]))oa=anew(aa->t,r,s);
+		USZ nra=nel(r-1,aa->s),nrb=nel(r-1,s),rla=aa->s[r-1],rlb=s[r-1],z=elsz(aa->t),off=0;
+		//DO(r,off+=abs(ai(wa)[i]))DO(r,off+=ai(wa)[i]<0?ai(wa)[i]:0)memset(oa->a,0,oa->l*z);
+		DO(r,if(ai(wa)[i]<0){DO2(r,off+=abs(ai(wa)[j])*(j!=i))})
+		DO(min(nra,nrb),mc(oa->a+(off+i*rlb)*z,aa->a+i*rla*z,min(rla,rlb)*z))
+		afree(aa);afree(wa);R a2v(oa);																}}
+
 #define r0dc(name,opi,opf)																		\
 	V name(V a,V w)																			{	\
 	VT at=vt(a),wt=vt(w);A *aa,*wa;I32 wi;F64 wf;												\
@@ -302,7 +328,7 @@ void eval(BC *bc,U32 pc)																	{
 		C bcReduce:q=poq();a=po();if(!vap(a)){ae(eT);}pu(a2v(rd(bc,q,v2a(a))));++pc;B;
 		mo(bcNeg,neg)mo(bcNot,not)mo(bcSgn,isgn)
 		mo(bcShape,shp)dy(bcReshape,rshp)
-		dy(bcIndex,idx)dy(bcReplicate,rplct)dy(bcCat,cat)
+		dy(bcIndex,idx)dy(bcReplicate,rplct)dy(bcCat,cat)dy(bcTake,take)
 		dy(bcAdd,add)dy(bcMul,mul)dy(bcSub,sub)dy(bcDiv,idiv)dy(bcMod,mod)
 		dy(bcMin,imin)dy(bcMax,imax)
 		dy(bcEq,eq)dy(bcGt,gt)dy(bcLt,lt)dy(bcGte,gte)dy(bcLte,lte)
