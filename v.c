@@ -123,7 +123,8 @@ V f2v(F64 f){V v;v.f=f;v.u64+=VFOFF;R v;}
 F64 v2f(V v){assert(vfp(v));v.u64-=VFOFF;R v.f;}
 
 P vap(V v){R !(v.u64 & ~VMASKPTR) && v.u64!=0ull;}
-V a2v(A *a){V v;v.a=a;R v;}
+V a2va(A *a){V v;v.a=a;R v;}
+V a2v(A *a);
 A *v2a(V v){assert(vap(v));R v.a;}
 
 P vqp(V v){R (v.u64&VTAG)==VTQ;}

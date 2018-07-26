@@ -66,6 +66,7 @@ void asv(A *a,AZ i,V v)																		{
 V agv(A *a,AZ i)																			{
 	COND(a->t, vI,R i2v(ai(a)[i]), vF,R f2v(af(a)[i]), vQ,R q2v(aq(a)[i]),
 	     vY,R y2v(ay(a)[i]), vS,R s2v(as(a)[i]), vD,R d2v(ad(a)[i]))						}
+V a2v(A *a){if(a->l==1){V v=agv(a,0);afree(a);R v;}R a2va(a);}
 void mka(U32 n)																				{
 	assert(n>0);
 	AZ s=n;V fst=po();if(vap(fst)){ae(eT);}VT t=vt(fst);--n;A *a=anew(t,1,&s);
