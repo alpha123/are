@@ -64,7 +64,7 @@ void asv(A *a,AZ i,V v)																		{
 	     vY,ay(a)[i]=v2y(v), vS,as(a)[i]=v2s(v), vD,ad(a)[i]=v2d(v))						}
 void mka(U32 n)																				{
 	assert(n>0);
-	AZ s=n;V fst=po();VT t=vt(fst);--n;A *a=anew(t,1,&s);
+	AZ s=n;V fst=po();if(vap(fst)){ae(eT);}VT t=vt(fst);--n;A *a=anew(t,1,&s);
 	asv(a,n,fst);DO(n,asv(a,n-i-1,po()))pu(a2v(a));											}
 
 V iota(V a){if(vt(a)!=vI){ae(eT);}AZ l=v2i(a);A *o=anew(vI,1,&l);DO(l,ai(o)[i]=i+IO)R a2v(o);}
@@ -284,6 +284,11 @@ void cqa(BC *bc,A *q)																		{
 	DO(hsp-ad,vfree(h[i]))																	}
 
 void callpwr(BC *bc,I32 n,Q q){if(n<0){ae(eD);}DO(n,nevq(bc,q))}
+void callpwra(BC *bc,A *a,Q q)																{
+	if(a->t!=vI){ae(eT);}V h[ARE_STACK_SIZE];U32 hsp=sp;DO(sp,h[i]=cv(s[i]))++pcsp;assert(pcsp<ANACD);
+	callpwr(bc,ai(a)[0],q);U8 ad=pocs[pcsp];egc();
+	DO(a->l-1,DO2(ad,pu(i==i_-1?h[hsp-ad+j]:cv(h[hsp-ad+j])))callpwr(bc,ai(a)[i+1],q))
+	DO(hsp-ad,vfree(h[i]))mka(a->l);														}
 void callwhile(BC *bc,Q c,Q q)																{
 	V hl[AMRA],ht[AMRA],cr;weg(bc,q,U8 ra=pucs[pcsp])DO(ra,hl[ra-1-i]=cv(s[sp-1-i]))
 	while(1)																				{
@@ -318,7 +323,7 @@ void eval(BC *bc,U32 pc)																	{
 		C bcRet:assert(rsp>0);pc=rs[--rsp];B;
 		C bcCall:call(5,di());B;
 		C bcCallQ:a=po();COND(vt(a), vQ,call(1,v2q(a)), vA,cqa(bc,v2a(a));++pc, ae(eT));B;
-		C bcCallPower:a=po();q=poq();COND(vt(a), vI,callpwr(bc,v2i(a),q), vQ,callwhile(bc,v2q(a),q), ae(eT))++pc;B;
+		C bcCallPower:a=po();q=poq();COND(vt(a), vA,callpwra(bc,v2a(a),q), vI,callpwr(bc,v2i(a),q), vQ,callwhile(bc,v2q(a),q), ae(eT))++pc;B;
 		C bcDrop:po();++pc;B;
 		C bcSwap:a=po();w=po();pu(a);pu(w);++pc;B;
 		C bcDup:pu(cv(s[sp-1]));++pc;B;
