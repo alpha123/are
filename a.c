@@ -53,7 +53,7 @@ Q poq(void){V v=po();if(vqp(v)){R v2q(v);}pu(v);ae(eT);R 0;}
 
 void he(E e)																				{
 	COND(e, eSO,puts("stack overflow"), eT,puts("type error"), eL,puts("length error"),
-	        eR,puts("rank error"), eD,puts("domain error"))									}
+	        eR,puts("rank error"), eD,puts("domain error"), eA,puts("adicity error"))		}
 
 void chka(A *a,A *w){U8 pfl=min(a->r,w->r);DO(pfl,if(a->s[i]!=w->s[i]){ae(eL);})}
 
@@ -62,6 +62,10 @@ void asv(A *a,AZ i,V v)																		{
 	if(vt(v)!=a->t){he(eT);}
 	COND(a->t, vI,ai(a)[i]=v2i(v), vF,af(a)[i]=v2f(v), vQ,aq(a)[i]=v2q(v),
 	     vY,ay(a)[i]=v2y(v), vS,as(a)[i]=v2s(v), vD,ad(a)[i]=v2d(v))						}
+// array get value
+V agv(A *a,AZ i)																			{
+	COND(a->t, vI,R i2v(ai(a)[i]), vF,R f2v(af(a)[i]), vQ,R q2v(aq(a)[i]),
+	     vY,R y2v(ay(a)[i]), vS,R s2v(as(a)[i]), vD,R d2v(ad(a)[i]))						}
 void mka(U32 n)																				{
 	assert(n>0);
 	AZ s=n;V fst=po();if(vap(fst)){ae(eT);}VT t=vt(fst);--n;A *a=anew(t,1,&s);
@@ -280,7 +284,7 @@ void egc(void){pocs[pcsp]=pucs[pcsp]=0;--pcsp;}
 #define weg(bc,q,f) ego(bc,q);f;egc();
 void cqa(BC *bc,A *q)																		{
 	V h[ARE_STACK_SIZE];U32 hsp=sp;DO(sp,h[i]=cv(s[i]))Q fst=aq(q)[0];weg(bc,fst,U8 ad=pocs[pcsp])
-	DO(q->l-1,DO2(ad,pu(i==i_-1?h[hsp-ad+j]:cv(h[hsp-ad+j])))nevq(bc,aq(q)[i+1]))			
+	DO(q->l-1,DO2(ad,pu(i==i_-1?h[hsp-ad+j]:cv(h[hsp-ad+j])))nevq(bc,aq(q)[i+1]))
 	DO(hsp-ad,vfree(h[i]))																	}
 
 void callpwr(BC *bc,I32 n,Q q){if(n<0){ae(eD);}DO(n,nevq(bc,q))}
@@ -295,6 +299,14 @@ void callwhile(BC *bc,Q c,Q q)																{
 		nevq(bc,q);DO(ra,ht[ra-1-i]=po())DO(ra,pu(hl[i]))DO(ra,pu(cv(ht[i])))mc(hl,ht,szof hl);
 		nevq(bc,c);cr=po();DO(ra,pu(cv(ht[i])))if(!vip(cr)){ae(eT);}if(v2i(cr)!=0){B;}		}
 	DO(ra,vfree(hl[i]))																		}
+
+void cea(BC *bc,Q q,A *a)																	{
+	V h[ARE_STACK_SIZE];U32 hsp=sp;DO(sp,h[i]=cv(s[i]))++pcsp;assert(pcsp<ANACD);
+	pu(agv(a,0));nevq(bc,q);U8 ad=pocs[pcsp];if(pucs[pcsp]>1){ae(eA);}egc();
+	V t=po();if(vap(t)){ae(eT);}A *oa=anew(vt(t),a->r,a->s);asv(oa,0,t);
+	DO(a->l-1,DO2(ad,pu(i==i_-1?h[hsp-ad+j]:cv(h[hsp-ad+j])))pu(agv(a,i+1));nevq(bc,q);asv(oa,i+1,po()))
+	DO(hsp-ad,vfree(h[i]))afree(a);
+	pu(a2v(oa));																			}
 
 #define dord(ax,x2v,v2x)DO(l,pu(x2v(ax(a)[i*rl]));DO2(rl-1,pu(x2v(ax(a)[j+1+i*rl]));nevq(bc,q))ax(o)[i]=v2x(po()))
 A *rd(BC *bc,Q q,A *a)																		{
@@ -330,6 +342,7 @@ void eval(BC *bc,U32 pc)																	{
 		C bcDip:q=poq();assert(rpp<ARE_RPUSH_SIZE);rp[rpp++]=po();call(1,q);B;
 		C bcPopRP:assert(rpp>0);pu(rp[--rpp]);++pc;B;
 		C bcIota:pu(iota(po()));++pc;B;
+		C bcEach:q=poq();a=po();if(vap(a)){cea(bc,q,v2a(a));++pc;}else{pu(a);call(1,q);}B;
 		C bcReduce:q=poq();a=po();if(!vap(a)){ae(eT);}pu(a2v(rd(bc,q,v2a(a))));++pc;B;
 		mo(bcNeg,neg)mo(bcNot,not)mo(bcSgn,isgn)
 		mo(bcShape,shp)dy(bcReshape,rshp)

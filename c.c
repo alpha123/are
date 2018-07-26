@@ -47,7 +47,7 @@ typedef enum{
 	bcPushI, bcPushF, bcPushS, bcMkArray, bcJmp, bcRet, bcCall, bcCallQ, bcCallPower,
 	bcSwap, bcDrop, bcDup, bcDip, bcKeep, bcPopRP, bcQuot, bcIota, bcIndex, bcShape, bcReshape,
 	bcNeg, bcNot, bcSgn, bcAdd, bcMul, bcSub, bcDiv, bcMod, bcMin, bcMax, bcEq, bcGt, bcLt, bcGte, bcLte,
-	bcCat, bcReplicate, bcTake, bcReduce
+	bcCat, bcReplicate, bcTake, bcEach, bcReduce
 }BCT;
 typedef struct{U32 z,l;U8 *b;}BC;
 BC *bcnew(USZ iz){BC *b=ca(1,szof(BC));b->z=iz;b->b=ma(iz);R b;}
@@ -109,6 +109,7 @@ USZ ct(BC *b,WD **d,USZ z,U8B s[z])															{
 			C 0xF7:emit(bcDiv);B;
 			C 0x7C:emit(bcMod);B;
 			C 0x7E:emit(bcNeg);B;
+			C 0xA8:emit(bcEach);B;
 			C 0xAC:emit(bcNot);B;
 			C 0x3D:emit(bcEq);B;
 			C 0x2260:emit(bcEq);emit(bcNot);B;
@@ -167,7 +168,7 @@ void dumpbc(BC *b)																			{
 			C bcEq:puts("EQ");B;C bcGt:puts("GT");B;C bcLt:puts("LT");B;
 			C bcGte:puts("GTE");B;C bcLte:puts("LTE");B;
 			C bcReplicate:puts("REPLICATE");B;C bcCat:puts("CAT");B;C bcTake:puts("TAKE");B;
-			C bcReduce:puts("REDUCE");B;
+			C bcEach:puts("EACH");B;C bcReduce:puts("REDUCE");B;
 			default:puts("?");																}}}
 #undef decodei
 #undef decodef
